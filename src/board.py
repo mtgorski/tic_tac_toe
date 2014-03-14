@@ -48,7 +48,16 @@ class Board(object):
         "Tie" if the game is over and neither has won
         "None" if the game is not over
         '''
-        pass
+        # Assumes the board is the result of a valid game. For example,
+        # won't catch it if both x and o have completed rows. 
+        triplets = self.rows + self.columns + self.diagonals
+        for trip in triplets:
+            if trip in Board.winners:
+                return trip[0]
+        for element in self.board:
+            if element not in ("x", "o"):
+                return "None"
+        return "Tie"
 
     @property
     def rows(self):
@@ -97,8 +106,33 @@ def test_properties():
 
 
 
+def test_result():
+
+    test_board1 = Board()
+    assert test_board1.result() == "None"
+
+    test_board2 = Board(["0", "x", "o", "3", "x", "5", "o", "7", "8"])
+    assert test_board2.result() == "None"
+
+    test_board3 = Board(["0", "x", "o", "3", "x", "5", "o", "x", "8"])
+    assert test_board3.result() == "x"
+
+    test_board4 = Board(["0", "x", "o", "3", "o", "5", "o", "x", "8"])
+    assert test_board4.result() == "o"
+
+    test_board5 = Board(["x", "x", "o", "3", "x", "5", "o", "x", "x"])
+    assert test_board5.result() == "x"
+
+    test_board6 = Board(["x", "x", "x", "3", "o", "5", "o", "o", "8"])
+    assert test_board6.result() == "x"
+
+    test_board7 = Board(["o", "o", "x", "x", "x", "o", "o", "x", "o"])
+    assert test_board7.result() == "Tie"
+    
+
 if __name__ == "__main__":
     test_properties()
+    test_result()
 
 
 
