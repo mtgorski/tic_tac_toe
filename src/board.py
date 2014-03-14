@@ -18,7 +18,7 @@ class Board(object):
     winners = (['x','x','x'], ['o','o','o'])
 
     def __init__(self):
-        pass
+        self.board = [str(i) for i in range(9)]
 
     def place(self, index, play):
         '''
@@ -42,11 +42,12 @@ class Board(object):
         pass
 
     @property
-    def rows(self)
+    def rows(self):
         '''
         Gets a list of the rows on the board.
         '''
-        pass
+        return [ [self.board[i], self.board[i+1], self.board[i+2]]
+                 for i in range(0, 9, 3) ]
 
     @property
     def columns(self):
@@ -64,4 +65,6 @@ class Board(object):
         pass
 
     def __str__(self):
-        pass
+        rows = self.rows
+        row_strings = (" " + " | ".join(rows[i]) for i in range(3))
+        return "\n-----------\n".join(row_strings)
