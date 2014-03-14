@@ -63,15 +63,17 @@ class Board(object):
         '''
         Gets a list of the columns on the board.
         '''
-        pass
+        return [ [self.board[i], self.board[i+3], self.board[i+6]]
+                 for i in range(3) ]
 
     @property
     def diagonals(self):
         '''
         Gets a list of the diagonals on the board (left to right first,
-        right to left second).
+        right to left second, both going down).
         '''
-        pass
+        return [ [self.board[0], self.board[4], self.board[8]],
+                 [self.board[2], self.board[4], self.board[6]] ]
 
     def __str__(self):
         rows = self.rows
@@ -84,10 +86,14 @@ def test_properties():
 
     test_board1 = Board()
     assert test_board1.rows == [["0", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
+    assert test_board1.columns == [["0", "3", "6"], ["1", "4", "7"], ["2", "5", "8"]]
+    assert test_board1.diagonals == [["0", "4", "8"], ["2", "4", "6"]]
 
 
     test_board2 = Board(["0", "x", "o", "3", "x", "5", "o", "7", "8"])
     assert test_board2.rows == [["0", "x", "o"], ["3", "x", "5"], ["o", "7", "8"]]
+    assert test_board2.columns == [["0", "3", "o"], ["x", "x", "7"], ["o", "5", "8"]]
+    assert test_board2.diagonals == [["0", "x", "8"], ["o", "x", "o"]]
 
 
 
