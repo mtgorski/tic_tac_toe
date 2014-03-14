@@ -39,7 +39,10 @@ class Board(object):
 
         *Raises: IndexError if index is already occupied
         '''
-        pass
+        if self.board[index] in ("x", "o"):
+            raise IndexError, "there is already a play at that index"
+        self.board[index] = play
+            
 
     def result(self):
         '''
@@ -128,6 +131,18 @@ def test_result():
 
     test_board7 = Board(["o", "o", "x", "x", "x", "o", "o", "x", "o"])
     assert test_board7.result() == "Tie"
+
+
+def test_place():
+
+    test_board1 = Board()
+    test_board1.place(8, "o")
+    assert test_board1.board[8] == "o"
+
+    test_board2 = Board(["0", "x", "o", "3", "x", "5", "o", "7", "8"])
+    test_board2.place(7, "x")
+    assert test_board2.result() == "x"
+    
     
 
 if __name__ == "__main__":
