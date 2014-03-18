@@ -2,6 +2,11 @@
 Contains the test suite for the Board class from board.py
 '''
 
+
+import unittest
+from board import Board
+
+
 def test_properties():
 
     test_board1 = Board()
@@ -90,9 +95,16 @@ def test_next_boards():
     assert next3 == []
 
 
+case1 = unittest.FunctionTestCase(test_properties)
+case2 = unittest.FunctionTestCase(test_result)
+case3 = unittest.FunctionTestCase(test_place)
+case4 = unittest.FunctionTestCase(test_next_play)
+case5 = unittest.FunctionTestCase(test_next_boards)
+
+
+def suite():
+    return unittest.TestSuite([case1, case2, case3, case4, case5])
+
+
 if __name__ == "__main__":
-    test_properties()
-    test_result()
-    test_place()
-    test_next_play()
-    test_next_boards()
+   unittest.TextTestRunner(verbosity=2).run(suite())
