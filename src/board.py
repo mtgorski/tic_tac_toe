@@ -11,6 +11,7 @@ class Board(object):
     initial_board (default=None): a list representing the initial board.
         The list should be length 9, with entries being the integer corresponding
         to the index, "x" or "o"
+    x_first (bool; default=True): determines whether 'x' or 'o' goes first ('x' by default)
     '''
     # Locations on the board are indexed as follows:
     # 0 | 1 | 2
@@ -23,11 +24,15 @@ class Board(object):
     
     winners = (['x','x','x'], ['o','o','o'])
 
-    def __init__(self, initial_board = None):
+    def __init__(self, initial_board = None, x_first=True):
         if initial_board is None:
             self.board = range(9)
         else:
             self.board = initial_board
+        if x_first:
+            self.first_play = 'x'
+        else:
+            self.first_play = 'o'
 
     def place(self, index, play):
         '''
@@ -87,6 +92,22 @@ class Board(object):
         return [ [self.board[0], self.board[4], self.board[8]],
                  [self.board[2], self.board[4], self.board[6]] ]
 
+    @property
+    def next_play(self):
+        '''
+        Gets the next play ("x" or "o") to be placed on the board.
+        '''
+        x = self.board.count("x")
+        o = self.board.count("o")
+        if x == o:
+            return self.first_play
+        if x + o == 9:
+            return None
+        if x > o:
+            return 'o'
+        return 'x'
+        
+
     def __str__(self):
         rows = self.rows
         row_strings = (" " + " | ".join([str(j) for j in rows[i]]) for i in range(3))
@@ -142,11 +163,25 @@ def test_place():
     test_board2.place(7, "x")
     assert test_board2.result() == "x"
 
+
+def test_next_play():
+
+    assert Board().next_play == "x"
+    assert Board([0, 1, 2, 3, "x", 4, 5, 6, 7, 8]).next_play == "o"
+    assert Board(["x", "o", 2, 3, 4, 5, 6, 7, 8]).next_play == "x"
+
+    assert Board(x_first=False).next_play == "o"
+    assert Board([0, 1, 2, 3, "x", 4, 5, 6, 7, 8], x_first=False).next_play == "o"
+    assert Board(["x", "o", 2, 3, 4, 5, 6, 7, 8], x_first=False).next_play == "o"
+
+    assert Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x']).next_play == None
     
 
 if __name__ == "__main__":
     test_properties()
     test_result()
+    test_place()
+    test_next_play()
 
 
 
