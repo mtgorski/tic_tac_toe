@@ -9,7 +9,7 @@ class Board(object):
 
     *Constructor arguments
     initial_board (default=None): a list representing the initial board.
-        The list should be length 9, with entries being either the string corresponding
+        The list should be length 9, with entries being the integer corresponding
         to the index, "x" or "o"
     '''
     # Locations on the board are indexed as follows:
@@ -25,7 +25,7 @@ class Board(object):
 
     def __init__(self, initial_board = None):
         if initial_board is None:
-            self.board = [str(i) for i in range(9)]
+            self.board = range(9)
         else:
             self.board = initial_board
 
@@ -89,7 +89,7 @@ class Board(object):
 
     def __str__(self):
         rows = self.rows
-        row_strings = (" " + " | ".join(rows[i]) for i in range(3))
+        row_strings = (" " + " | ".join([str(j) for j in rows[i]]) for i in range(3))
         return "\n-----------\n".join(row_strings)
 
 
@@ -97,36 +97,35 @@ class Board(object):
 def test_properties():
 
     test_board1 = Board()
-    assert test_board1.rows == [["0", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
-    assert test_board1.columns == [["0", "3", "6"], ["1", "4", "7"], ["2", "5", "8"]]
-    assert test_board1.diagonals == [["0", "4", "8"], ["2", "4", "6"]]
+    assert test_board1.rows == [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    assert test_board1.columns == [[0, 3, 6], [1, 4, 7], [2, 5, 8]]
+    assert test_board1.diagonals == [[0, 4, 8], [2, 4, 6]]
 
 
-    test_board2 = Board(["0", "x", "o", "3", "x", "5", "o", "7", "8"])
-    assert test_board2.rows == [["0", "x", "o"], ["3", "x", "5"], ["o", "7", "8"]]
-    assert test_board2.columns == [["0", "3", "o"], ["x", "x", "7"], ["o", "5", "8"]]
-    assert test_board2.diagonals == [["0", "x", "8"], ["o", "x", "o"]]
-
-
+    test_board2 = Board([0, "x", "o", 3, "x", 5, "o", 7, 8])
+    assert test_board2.rows == [[0, "x", "o"], [3, "x", 5], ["o", 7, 8]]
+    assert test_board2.columns == [[0, 3, "o"], ["x", "x", 7], ["o", 5, 8]]
+    assert test_board2.diagonals == [[0, "x", 8], ["o", "x", "o"]]
+    
 
 def test_result():
 
     test_board1 = Board()
     assert test_board1.result() == "None"
 
-    test_board2 = Board(["0", "x", "o", "3", "x", "5", "o", "7", "8"])
+    test_board2 = Board([0, "x", "o", 3, "x", 5, "o", 7, 8])
     assert test_board2.result() == "None"
 
-    test_board3 = Board(["0", "x", "o", "3", "x", "5", "o", "x", "8"])
+    test_board3 = Board([0, "x", "o", 3, "x", 5, "o", "x", 8])
     assert test_board3.result() == "x"
 
-    test_board4 = Board(["0", "x", "o", "3", "o", "5", "o", "x", "8"])
+    test_board4 = Board([0, "x", "o", 3, "o", 5, "o", "x", 8])
     assert test_board4.result() == "o"
 
-    test_board5 = Board(["x", "x", "o", "3", "x", "5", "o", "x", "x"])
+    test_board5 = Board(["x", "x", "o", 3, "x", 5, "o", "x", "x"])
     assert test_board5.result() == "x"
 
-    test_board6 = Board(["x", "x", "x", "3", "o", "5", "o", "o", "8"])
+    test_board6 = Board(["x", "x", "x", 3, "o", 5, "o", "o", 8])
     assert test_board6.result() == "x"
 
     test_board7 = Board(["o", "o", "x", "x", "x", "o", "o", "x", "o"])
@@ -139,10 +138,10 @@ def test_place():
     test_board1.place(8, "o")
     assert test_board1.board[8] == "o"
 
-    test_board2 = Board(["0", "x", "o", "3", "x", "5", "o", "7", "8"])
+    test_board2 = Board([0, "x", "o", 3, "x", 5, "o", 7, 8])
     test_board2.place(7, "x")
     assert test_board2.result() == "x"
-    
+
     
 
 if __name__ == "__main__":
