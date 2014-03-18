@@ -67,6 +67,18 @@ class Board(object):
                 return "None"
         return "Tie"
 
+    def next_boards(self):
+        '''
+        *Returns: a list of boards that are one play ahead of self.
+        '''
+        play = self.next_play
+        result = []
+        for index in self.open_indices:
+            b = Board([i for i in self.board])
+            b.place(index, play)
+            result.append(b)
+        return result
+
     @property
     def open_indices(self):
         '''
@@ -209,6 +221,7 @@ def test_next_boards():
     test_board2 = Board()
     next2 = test_board2.next_boards()
     assert len(next2) == 9
+    assert test_board2 == Board() #Make sure the board wasn't mutated
 
     test_board3 = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x'])
     next3 = test_board3.next_boards()
@@ -220,7 +233,7 @@ if __name__ == "__main__":
     test_result()
     test_place()
     test_next_play()
-    #test_next_boards()
+    test_next_boards()
 
 
 
