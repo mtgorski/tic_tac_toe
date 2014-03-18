@@ -133,7 +133,9 @@ class Board(object):
         row_strings = (" " + " | ".join([str(j) for j in rows[i]]) for i in range(3))
         return "\n-----------\n".join(row_strings)
 
-    # Instances are compared on the basis of their boards. 
+    # Instances are compared on the basis of their boards.
+    # Note however that two equivalent boards may differ
+    # based on whether 'x' or 'o' went first. 
     def __cmp__(self, other):
         return cmp(self.board, other.board)
 
