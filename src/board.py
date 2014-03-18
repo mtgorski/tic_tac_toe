@@ -68,6 +68,14 @@ class Board(object):
         return "Tie"
 
     @property
+    def open_indices(self):
+        '''
+        Gets a list of places on the board with no plays.
+        '''
+        return [i for i in self.board if i not in ('x', 'o')]
+        
+
+    @property
     def rows(self):
         '''
         Gets a list of the rows on the board.
@@ -113,6 +121,9 @@ class Board(object):
         row_strings = (" " + " | ".join([str(j) for j in rows[i]]) for i in range(3))
         return "\n-----------\n".join(row_strings)
 
+    # Instances are compared on the basis of their boards. 
+    def __cmp__(self, other):
+        return cmp(self.board, other.board)
 
 
 def test_properties():
@@ -121,12 +132,23 @@ def test_properties():
     assert test_board1.rows == [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
     assert test_board1.columns == [[0, 3, 6], [1, 4, 7], [2, 5, 8]]
     assert test_board1.diagonals == [[0, 4, 8], [2, 4, 6]]
+    assert test_board1.open_indices == [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 
     test_board2 = Board([0, "x", "o", 3, "x", 5, "o", 7, 8])
     assert test_board2.rows == [[0, "x", "o"], [3, "x", 5], ["o", 7, 8]]
     assert test_board2.columns == [[0, 3, "o"], ["x", "x", 7], ["o", 5, 8]]
     assert test_board2.diagonals == [[0, "x", 8], ["o", "x", "o"]]
+    assert test_board2.open_indices == [0, 3, 5, 7, 8] 
+
+    a = Board(['o', 'x', 2, 'x', 'x', 'o', 6, 'o', 8])
+    b = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x'])
+    c = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x'])
+    assert a < b
+    assert a != b
+    assert b == c
+
+    
     
 
 def test_result():
@@ -175,13 +197,30 @@ def test_next_play():
     assert Board(["x", "o", 2, 3, 4, 5, 6, 7, 8], x_first=False).next_play == "o"
 
     assert Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x']).next_play == None
-    
+
+
+def test_next_boards():
+
+    test_board1 = Board(['o', 'x', 2, 'x', 'x', 'o', 6, 'o', 8])
+    next1 = test_board1.next_boards()
+    assert Board(['o', 'x', 'x', 'x', 'x', 'o', 6, 'o', 8]) in next1
+    assert len(next1) == 3
+
+    test_board2 = Board()
+    next2 = test_board2.next_boards()
+    assert len(next2) == 9
+
+    test_board3 = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x'])
+    next3 = test_board3.next_boards()
+    assert next3 == []
+
 
 if __name__ == "__main__":
     test_properties()
     test_result()
     test_place()
     test_next_play()
+    #test_next_boards()
 
 
 
