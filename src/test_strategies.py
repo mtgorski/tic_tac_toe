@@ -30,6 +30,9 @@ class TestRandom(unittest.TestCase):
         self.assertEqual(test_play[1], 'o')
 
         self.assertRaises(ValueError, random_strat, self.full)
+
+    def test_human(self):
+        self.assertRaises(ValueError, human, self.full)
         
 
 

@@ -30,8 +30,8 @@ class Game(object):
 
     def __init__(self, strategy_A, strategy_B, strategy_A_name="",
                  strategy_B_name="", x_first=True):
-        self.strategy_A = strategy_B
-        self.strategy_B = strategy_A
+        self.strategy_A = strategy_A
+        self.strategy_B = strategy_B
         self.strategy_A_name = (strategy_A.__name__ if not strategy_A_name
                                else strategy_A_name)
         self.strategy_B_name = (strategy_B.__name__ if not strategy_B_name
@@ -117,5 +117,5 @@ class Game(object):
 
 if __name__ == "__main__":
     import strategies
-    g = Game(strategies.random_strat, strategies.random_strat, "A", "B")
-    g.play_game()
+    g = Game(strategies.human, strategies.random_strat, "human", "random")
+    g.play_game(display=True)
