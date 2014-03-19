@@ -28,12 +28,22 @@ class TestGame(unittest.TestCase):
 
 
 class TestGameRepeatedly(TestGame):
+
+    def __init__(self, repeat, *args, **kws):
+        super(TestGameRepeatedly, self).__init__(*args, **kws)
+        self.repeat = repeat
+        
     def test_repeatedly(self):
-        for i in xrange(100):
+        for i in xrange(self.repeat):
             super(TestGameRepeatedly, self).setUp()
             super(TestGameRepeatedly, self).test_game() 
+
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(TestGameRepeatedly(100, "test_repeatedly"))
+    return suite
     
-        
 if __name__ == "__main__":
-    unittest.main()
-    
+    unittest.TextTestRunner(verbosity=2).run(suite())
