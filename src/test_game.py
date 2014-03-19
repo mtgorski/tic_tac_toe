@@ -6,6 +6,7 @@ This module contains the test suite for the game logic.
 import unittest
 
 from game import Game
+from strategies import random_strat
 
 
 class TestGame(unittest.TestCase):
@@ -15,6 +16,7 @@ class TestGame(unittest.TestCase):
 
     def test_game(self):
 
+        self.assertEqual(self.game1.result, 'None')
         self.game1.play_game()
         result = self.game1.result
         self.assertIn(result, ("Tie", "x", "o"))
@@ -25,3 +27,6 @@ class TestGame(unittest.TestCase):
         self.assertRaises(ValueError, self.game1.play_game)
 
         
+if __name__ == "__main__":
+    unittest.main()
+    
