@@ -26,6 +26,13 @@ class TestGame(unittest.TestCase):
             self.assertIn(self.game1.winner, ("A", "B"))
         self.assertRaises(ValueError, self.game1.play_game)
 
+
+class TestGameRepeatedly(TestGame):
+    def test_repeatedly(self):
+        for i in xrange(100):
+            super(TestGameRepeatedly, self).setUp()
+            super(TestGameRepeatedly, self).test_game() 
+    
         
 if __name__ == "__main__":
     unittest.main()

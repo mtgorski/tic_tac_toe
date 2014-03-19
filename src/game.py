@@ -57,6 +57,7 @@ class Game(object):
         *Raises:
         ValueError if the game is over
         '''
+        
         if self.result != 'None':
             raise ValueError, "Game has already been played"
         current = self.strategy_A
@@ -67,16 +68,19 @@ class Game(object):
             names = {'o':  self.strategy_A_name, 'x' : self.strategy_B_name}
 
         while self.result == 'None':
+            self.history.append(copy.deepcopy(self.board))
             if display:
                 print self.board
                 print "\n"
             play = current(self.board)
             self.board.place(*play)
+            self.history.append((names[play[1]], play))
             if display:
                 name = names[play[1]]
                 print "%s plays %s at %i.\n"%(name, play[1], play[0])
             current, up_next = up_next, current
-
+            
+        self.history.append(copy.deepcopy(self.board))
         result = self.result
         if result == "Tie":
             self.winner = "No one"
@@ -95,7 +99,12 @@ class Game(object):
         '''
         Displays the sequence of boards and moves played thus far.
         '''
-        pass
+        for item in self.history:
+            if isinstance(item, Board):
+                print item
+                print "\n"
+            else:
+                print "%s plays %s at %i.\n"%(item[0], item[1][1], item[1][0])
         
     @property
     def result(self):
