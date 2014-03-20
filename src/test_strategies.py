@@ -3,8 +3,10 @@ Contains the test suite for tic-tac-toe strategies.
 '''
 
 import unittest
-from strategies import random_strat
+
+from strategies import random_strat, is_acceptable, perfect
 from board import Board
+from game import Game
 
 
 class TestRandom(unittest.TestCase):
@@ -37,12 +39,61 @@ class TestRandom(unittest.TestCase):
 
 def TestPerfectCases(unittest.TestCase):
     '''Tests the perfect strategy against specific cases.'''
-    pass
 
+    def setUp(self):
+        # comment denotes who goes next
+        self.board1 = Board(['x', 'o', 2, 'x', 'x', 'o', 6, 7, 'o']) #x
+        self.board2 = Board([0, 'o', 'x', 3, 'x', 'x', 'o', 7, 8]) #o
+        self.board3 = Board([0, 1, 2, 3, 'x', 5, 6, 7, 8]) #o
+        self.board4 = Board(['x', 1, 2, 3, 'x', 5, 'o', 7, 8]) #o
+        self.board5 = Board(['x', 1, 2, 3, 'x', 5, 'o', 'x', 'o']) #o
+        self.board6 = Board(['o', 'x', 'x', 'x', 'x', 'o', 'o', 'o', 8]) #x
+        self.board7 = Board(['o', 'x', 'x', 'x', 'x', 'o', 'o', 'o', 'x']) #no one
+        self.board8 = Board() #x
+
+        # These boards are acceptable to the player who goes next
+        self.good_boards = [self.board1, self.board2, self.board3, self.board4,
+                            self.board5, self.board6, self.board8]
+
+        self.board9 = Board(['x', 'x', 2, 'o', 'x', 5, 6, 7, 'o'])
+        self.board10 = Board(['o', 'o', 2, 'x', 'x', 'x', 6, 7, 8])
+
+    def test_acceptable(self):
+        for board in self.good_boards:
+            player = board.next_play
+            self.assertTrue(is_acceptable(board, player))
+
+        self.assertTrue(is_acceptable(self.board7, 'x'))
+        self.assertTrue(is_acceptable(self.board7, 'o'))
+        self.assertFalse(is_acceptable(self.board9, 'o'))
+        self.assertTrue(is_acceptable(self.board9, 'x'))
+        self.assertTrue(is_acceptable(self.board10, 'x'))
+        self.assertFalse(is_acceptable(self.board10, 'o'))
+
+    def test_perfect(self):
+
+        self.assertIn(perfect(self.board1), [(6, 'x'), (2, 'x')])
+        self.assertIn(perfect(self.board3), [(0, 'o'), (2, 'o'), (6, 'o'), (7, 'o')])
+        self.assertEqual(perfect(self.board4), (8, 'o'))
+        self.assertEqual(perfect(self.board5), (1, 'o'))
+        self.assertEqual(perfect(self.board6), (8, 'x'))
+        self.assertRaises(ValueError, perfect, self.board7)
+        
 
 def TestPerfectLossRatio(unittest.TestCase):
     '''Tests whether the perfect strategy can lose.'''
-    pass
+
+    def test_perfect(self):
+        results = []
+        for _ in xrange(100):
+            g = Game(perfect, random_strat)
+            g.play_game()
+            results.append(g.winner)
+        for _ in xrange(100):
+            g = Game(random_strat, perfect)
+            g.play_game()
+            results.append(g.winner)
+        self.assertNotIn(random_strat.__name__, result)
 
 if __name__ == "__main__":
     unittest.main()
