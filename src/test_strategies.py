@@ -33,8 +33,16 @@ class TestRandom(unittest.TestCase):
 
     def test_human(self):
         self.assertRaises(ValueError, human, self.full)
-        
 
+
+def TestPerfectCases(unittest.TestCase):
+    '''Tests the perfect strategy against specific cases.'''
+    pass
+
+
+def TestPerfectLossRatio(unittest.TestCase):
+    '''Tests whether the perfect strategy can lose.'''
+    pass
 
 if __name__ == "__main__":
     unittest.main()
