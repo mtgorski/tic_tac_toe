@@ -5,6 +5,7 @@ A strategy is function that, given a state of the board, returns
 a play (a tuple of the form (board index, play), where play is 'x' or 'o').
 '''
 import random
+import copy
 
 '''
 Here is an explanation of the "perfect" strategy.
@@ -18,6 +19,7 @@ A board is acceptable to a player if any of the following are true:
        can make lead to an acceptable board.
     4) It is the player's turn and the play made by the
        perfect strategy on that board leads to an acceptable board.
+Otherwise, the board is unacceptable. 
 
 Note that the perfect strategy has no preference for winning. It only
 avoids losing.
@@ -36,7 +38,19 @@ def perfect(board):
 
     *Raises: ValueError, if there are no plays left to make on the board
     '''
-    pass
+    play = board.next_play
+    indices = board.open_indices
+    if not indices:
+        raise ValueError, "there are no plays to make on this boad"
+    for index in indices:
+        new_board = copy.deepcopy(board)
+        new_board.place(index, play)
+        if is_acceptable(new_board, play):
+            return index, play
+    # This final return should never be executed in a normal game
+    # but rather only if a board on which the perfect strategy
+    # had not been playing is passed in. 
+    return indices[0], play 
 
 
 def is_acceptable(board, player):
@@ -48,7 +62,24 @@ def is_acceptable(board, player):
     board (board.Board instance): the board to be determined acceptable or not
     player (str): 'x' or 'o', the symbol the player uses
     '''
-    pass
+    result = board.result()
+    if result == player or result == 'Tie':
+        return True
+    elif result == "None":
+        pass
+    else:
+        return False
+    next_player = board.next_play
+    if next_player == player:
+        next_board = copy.deepcopy(board)
+        next_board.place(*perfect(board))
+        return is_acceptable(next_board, player)
+    else:
+        for next_board in board.next_boards():
+            if not is_acceptable(next_board, player):
+                return False
+        return True
+    return False
 
 
 # This random strategy will facilitate testing game logic
@@ -98,4 +129,6 @@ def human(board, display=False):
         print "That is not a valid location.\n"
         index = int(raw_input("Where would you like to play your %s?"%(play)))
     return index, play
+
+
 

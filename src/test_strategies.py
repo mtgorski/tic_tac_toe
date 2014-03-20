@@ -4,7 +4,7 @@ Contains the test suite for tic-tac-toe strategies.
 
 import unittest
 
-from strategies import random_strat, is_acceptable, perfect
+from strategies import random_strat, is_acceptable, perfect, human
 from board import Board
 from game import Game
 
@@ -37,13 +37,12 @@ class TestRandom(unittest.TestCase):
         self.assertRaises(ValueError, human, self.full)
 
 
-def TestPerfectCases(unittest.TestCase):
+class TestPerfectCases(unittest.TestCase):
     '''Tests the perfect strategy against specific cases.'''
 
     def setUp(self):
         # comment denotes who goes next
         self.board1 = Board(['x', 'o', 2, 'x', 'x', 'o', 6, 7, 'o']) #x
-        self.board2 = Board([0, 'o', 'x', 3, 'x', 'x', 'o', 7, 8]) #o
         self.board3 = Board([0, 1, 2, 3, 'x', 5, 6, 7, 8]) #o
         self.board4 = Board(['x', 1, 2, 3, 'x', 5, 'o', 7, 8]) #o
         self.board5 = Board(['x', 1, 2, 3, 'x', 5, 'o', 'x', 'o']) #o
@@ -52,7 +51,7 @@ def TestPerfectCases(unittest.TestCase):
         self.board8 = Board() #x
 
         # These boards are acceptable to the player who goes next
-        self.good_boards = [self.board1, self.board2, self.board3, self.board4,
+        self.good_boards = [self.board1, self.board3, self.board4,
                             self.board5, self.board6, self.board8]
 
         self.board9 = Board(['x', 'x', 2, 'o', 'x', 5, 6, 7, 'o'])
@@ -80,7 +79,7 @@ def TestPerfectCases(unittest.TestCase):
         self.assertRaises(ValueError, perfect, self.board7)
         
 
-def TestPerfectLossRatio(unittest.TestCase):
+class TestPerfectLossRatio(unittest.TestCase):
     '''Tests whether the perfect strategy can lose.'''
 
     def test_perfect(self):
@@ -93,7 +92,7 @@ def TestPerfectLossRatio(unittest.TestCase):
             g = Game(random_strat, perfect)
             g.play_game()
             results.append(g.winner)
-        self.assertNotIn(random_strat.__name__, result)
+        self.assertNotIn(random_strat.__name__, results)
 
 if __name__ == "__main__":
     unittest.main()
