@@ -6,6 +6,7 @@ a play (a tuple of the form (board index, play), where play is 'x' or 'o').
 '''
 import random
 import copy
+import cPickle
 
 '''
 Here is an explanation of the "perfect" strategy.
@@ -53,8 +54,23 @@ def perfect(board):
     return indices[0], play 
 
 
-acceptable_cache = {}
+def memoize_mutable(f):
+    '''
+    A wrapper for memoizing functions with mutable parameters.
+    '''
+    memo = {}
+    def _f(*args, **kws):
+        arg_str = cPickle.dumps(args)+cPickle.dumps(kws)
+        result = memo.get(arg_str)
+        if result:
+            return result
+        result = f(*args, **kws)
+        memo[arg_str] = result
+        return result
+    return _f
 
+
+@memoize_mutable
 def is_acceptable(board, player):
     '''
     Determines whether the board is acceptable to a player, i.e.,
