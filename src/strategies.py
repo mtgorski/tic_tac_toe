@@ -53,6 +53,8 @@ def perfect(board):
     return indices[0], play 
 
 
+acceptable_cache = {}
+
 def is_acceptable(board, player):
     '''
     Determines whether the board is acceptable to a player, i.e.,
