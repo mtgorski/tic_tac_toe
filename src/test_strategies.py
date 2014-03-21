@@ -83,16 +83,24 @@ class TestPerfectLossRatio(unittest.TestCase):
     '''Tests whether the perfect strategy can lose.'''
 
     def test_perfect(self):
-        results = []
+        results = set([])
         for _ in xrange(100):
             g = Game(perfect, random_strat)
             g.play_game()
-            results.append(g.winner)
+            results.add(g.winner)
         for _ in xrange(100):
             g = Game(random_strat, perfect)
             g.play_game()
-            results.append(g.winner)
+            results.add(g.winner)
         self.assertNotIn(random_strat.__name__, results)
+
+    def test_perfect_vs_perfect(self):
+        results = set([])
+        for _ in xrange(100):
+            g = Game(perfect, perfect)
+            g.play_game()
+            results.add(g.result)
+        self.assertNotIn("o", results)
 
 if __name__ == "__main__":
     unittest.main()
