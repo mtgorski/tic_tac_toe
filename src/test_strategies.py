@@ -95,12 +95,9 @@ class TestPerfectLossRatio(unittest.TestCase):
         self.assertNotIn(random_strat.__name__, results)
 
     def test_perfect_vs_perfect(self):
-        results = set([])
-        for _ in xrange(100):
-            g = Game(perfect, perfect)
-            g.play_game()
-            results.add(g.result)
-        self.assertNotIn("o", results)
+        g = Game(perfect, perfect)
+        g.play_game()
+        self.assertEqual(g.result, "Tie")
 
 if __name__ == "__main__":
     unittest.main()
