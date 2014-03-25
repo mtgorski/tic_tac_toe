@@ -82,13 +82,17 @@ class TestPerfectCases(unittest.TestCase):
 class TestPerfectLossRatio(unittest.TestCase):
     '''Tests whether the perfect strategy can lose.'''
 
+    # Not considering symmetries or the fact that the game can end
+    # before the board is full, there are 945 ways random can play if
+    # it goes first and 384 ways it can play if it goes second. 
+
     def test_perfect(self):
         results = set([])
-        for _ in xrange(100):
+        for _ in xrange(500):
             g = Game(perfect, random_strat)
             g.play_game()
             results.add(g.winner)
-        for _ in xrange(100):
+        for _ in xrange(1000):
             g = Game(random_strat, perfect)
             g.play_game()
             results.add(g.winner)
@@ -99,5 +103,13 @@ class TestPerfectLossRatio(unittest.TestCase):
         g.play_game()
         self.assertEqual(g.result, "Tie")
 
+
+def suite():
+    test_classes = [TestPerfectLossRatio, TestPerfectCases, TestRandom]
+    suites = [unittest.TestLoader().loadTestsFromTestCase(test_class)
+              for test_class in test_classes]
+    return unittest.TestSuite(suites)
+
+
 if __name__ == "__main__":
-    unittest.main()
+    unittest.TextTestRunner(verbosity=2).run(suite())
