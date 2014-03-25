@@ -8,6 +8,8 @@ import random
 import copy
 import cPickle
 
+import user_input
+
 '''
 Here is an explanation of the "perfect" strategy.
 
@@ -142,10 +144,8 @@ def human(board, display=False):
     if display:
         print board
         print "\n"
-    index = int(raw_input("Where would you like to place your %s?"%(play)))
-    while index not in board.open_indices:
-        print "That is not a valid location.\n"
-        index = int(raw_input("Where would you like to play your %s?"%(play)))
+    options = [str(i) for i in board.open_indices]
+    index = int(user_input.get_input("Where would you like to place your %s?"%(play), options))
     return index, play
 
 
