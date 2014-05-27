@@ -14,7 +14,7 @@ from board import Board
 from game import Game
 
 
-class TestRandom(unittest.TestCase):
+class RandomStratFunctionTest(unittest.TestCase):
 
     def setUp(self):
         self.empty = Board()
@@ -22,30 +22,40 @@ class TestRandom(unittest.TestCase):
         self.test1 = Board(["o", 1, 2, 3, "x", 5, "x", 7, 8])
         self.full = Board(['x', 'o', 'x', 'o', 'x', 'o', 'x', 'o', 'x'])
 
-    def test_random_strat(self):
+    def test_OnEmptyBoardReturnsIndexInRange(self):
         empty_play = random_strat(self.empty)
-        self.assertIsInstance(empty_play, tuple)
         self.assertIn(empty_play[0], range(9))
-        self.assertEqual(empty_play[1], ("x"))
-        self.assertEqual(self.empty, Board())
 
-        empty_play_o = random_strat(self.empty_o)
-        self.assertEqual(empty_play_o[1], 'o')
+    def test_OnEmptyBoardReturnsPlayGoingFirst1(self):
+        play = random_strat(self.empty)
+        self.assertEqual(play[1], "x")
+        
+    def test_OnEmptyBoardReturnsPlayGoingFirst2(self):
+        play = random_strat(self.empty_o)
+        self.assertEqual(play[1], 'o')
 
-        test_play = random_strat(self.test1)
-        self.assertIn(test_play[0], [1, 2, 3, 5, 7, 8])
-        self.assertEqual(test_play[1], 'o')
+    def test_OnSemiFullBoardReturnsOpenIndex(self):
+        play = random_strat(self.test1)
+        self.assertIn(play[0], [1, 2, 3, 5, 7, 8])
 
+    def test_OnSemiFullBoardReturnsPlayGoingNext(self):
+        play = random_strat(self.test1)
+        self.assertEqual(play[1], "o")
+
+    def test_OnFullBoardRaisesValueError(self):
         self.assertRaises(ValueError, random_strat, self.full)
 
-    def test_human(self):
+
+class HumanFunctionTest(unittest.TestCase):
+    
+    def test_OnFullBoardRaisesValueError(self):
+        full = Board(['x', 'o', 'x', 'o', 'x', 'o', 'x', 'o', 'x'])
         self.assertRaises(ValueError, human, self.full)
 
 
-class TestPerfectCases(unittest.TestCase):
-    '''Tests the perfect strategy against specific cases.'''
+class Helper(object):
 
-    def setUp(self):
+    def set_boards(self):
         # comment denotes who goes next
         self.board1 = Board(['x', 'o', 2, 'x', 'x', 'o', 6, 7, 'o']) #x
         self.board3 = Board([0, 1, 2, 3, 'x', 5, 6, 7, 8]) #o
@@ -61,56 +71,109 @@ class TestPerfectCases(unittest.TestCase):
 
         self.board9 = Board(['x', 'x', 2, 'o', 'x', 5, 6, 7, 'o'])
         self.board10 = Board(['o', 'o', 2, 'x', 'x', 'x', 6, 7, 8])
-
-    def test_acceptable(self):
-        for board in self.good_boards:
-            player = board.next_play
-            self.assertTrue(is_acceptable(board, player))
-
-        self.assertTrue(is_acceptable(self.board7, 'x'))
-        self.assertTrue(is_acceptable(self.board7, 'o'))
-        self.assertFalse(is_acceptable(self.board9, 'o'))
-        self.assertTrue(is_acceptable(self.board9, 'x'))
-        self.assertTrue(is_acceptable(self.board10, 'x'))
-        self.assertFalse(is_acceptable(self.board10, 'o'))
-
-    def test_perfect(self):
-
-        self.assertIn(perfect(self.board1), [(6, 'x'), (2, 'x')])
-        self.assertIn(perfect(self.board3), [(0, 'o'), (2, 'o'), (6, 'o'), (7, 'o')])
-        self.assertEqual(perfect(self.board4), (8, 'o'))
-        self.assertEqual(perfect(self.board5), (1, 'o'))
-        self.assertEqual(perfect(self.board6), (8, 'x'))
-        self.assertRaises(ValueError, perfect, self.board7)
         
 
-class TestPerfectLossRatio(unittest.TestCase):
-    '''Tests whether the perfect strategy can lose.'''
+class PerfectFunctionTest(unittest.TestCase, Helper):
+
+    def setUp(self):
+        self.set_boards()
+
+    def test_OnBoardWithMultipleAccetableOptionsReturnsOneOfThem1(self):
+        self.assertIn(perfect(self.board1), [(6, 'x'), (2, 'x')])
+
+    def test_OnBoardWithMultipleAccetableOptionsReturnsOneOfThem2(self):
+        self.assertIn(perfect(self.board3), [(0, 'o'), (2, 'o'), (6, 'o'), (7, 'o')])
+
+    def test_OnBoardWithOneAcceptableOptionReturnsIt1(self):
+        self.assertEqual(perfect(self.board4), (8, 'o'))
+
+    def test_OnBoardWithOneAcceptableOptionReturnsIt2(self):
+        self.assertEqual(perfect(self.board5), (1, 'o'))
+
+    def test_OnBoardWithOneAcceptableOptionReturnsIt3(self):
+        self.assertEqual(perfect(self.board6), (8, 'x'))
+
+    def test_OnFullBoardRaisesValueError(self):
+        self.assertRaises(ValueError, perfect, self.board7)
 
     # Not considering symmetries or the fact that the game can end
     # before the board is full, there are 945 ways random can play if
     # it goes first and 384 ways it can play if it goes second. 
-
-    def test_perfect(self):
+        
+    def test_InFullGameNeverLosesToRandomStrategyIfGoingFirst(self):
         results = set([])
         for _ in xrange(500):
             g = Game(perfect, random_strat)
             g.play_game()
             results.add(g.winner)
+        self.assertNotIn(random_strat.__name__, results)
+
+    def test_InFullGameNeverLosesToRandomStrategyIfGoingSecond(self):
+        results = set([])
         for _ in xrange(1000):
             g = Game(random_strat, perfect)
             g.play_game()
             results.add(g.winner)
         self.assertNotIn(random_strat.__name__, results)
 
-    def test_perfect_vs_perfect(self):
+    def test_InFullGameTiesWhenPlayingAgainstItself(self):
         g = Game(perfect, perfect)
         g.play_game()
         self.assertEqual(g.result, "Tie")
+        
+
+
+class IsAcceptableFunctionTest(unittest.TestCase, Helper):
+
+    def setUp(self):
+        self.set_boards()
+
+    def assertIsAcceptable(self, board=None, play=''):
+        self.assertTrue(is_acceptable(board, play))
+
+    def assertIsNotAcceptable(self, board=None, play=''):
+        self.assertFalse(is_acceptable(board, play))
+
+    def test_OnAcceptableBoardReturnsTrue1(self):
+        self.assertIsAcceptable(self.board7, 'x')
+
+    def test_OnAcceptableBoardReturnsTrue2(self):
+        self.assertIsAcceptable(self.board9, 'x')
+
+    def test_OnAcceptableBoardReturnsTrue3(self):
+        self.assertIsAcceptable(self.board10, 'x')
+
+    def test_OnAcceptableBoardReturnsTrue4(self):
+        self.assertIsAcceptable(self.board1, 'x')
+
+    def test_OnAcceptableBoardReturnsTrue5(self):
+        self.assertIsAcceptable(self.board3, 'o')
+
+    def test_OnAcceptableBoardReturnsTrue6(self):
+        self.assertIsAcceptable(self.board4, 'o')
+
+    def test_OnAcceptableBoardReturnsTrue7(self):
+        self.assertIsAcceptable(self.board5, 'o')
+
+    def test_OnAcceptableBoardReturnsTrue8(self):
+        self.assertIsAcceptable(self.board6, 'x')
+
+    def test_OnAcceptableBoardReturnsTrue9(self):
+        self.assertIsAcceptable(self.board8, 'x')
+
+    def test_OnUnacceptableBoardReturnsFalse1(self):
+        self.assertIsNotAcceptable(self.board9, 'o')
+
+    def test_OnUnacceptableBoardReturnsFalse2(self):
+        self.assertIsNotAcceptable(self.board10, 'o')
+
+    
+    
+
 
 
 def suite():
-    test_classes = [TestPerfectLossRatio, TestPerfectCases, TestRandom]
+    test_classes = [IsAcceptableFunctionTest, PerfectFunctionTest, RandomStratFunctionTest]
     suites = [unittest.TestLoader().loadTestsFromTestCase(test_class)
               for test_class in test_classes]
     return unittest.TestSuite(suites)
