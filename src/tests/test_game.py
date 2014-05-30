@@ -4,6 +4,11 @@ This module contains the test suite for the game logic.
 
 
 import unittest
+import os,sys,inspect
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
 
 from game import Game
 from strategies import random_strat

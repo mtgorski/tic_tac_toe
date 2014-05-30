@@ -3,6 +3,7 @@ This module combines all test suites and runs them if executed as __main__.
 '''
 import unittest
 
+
 import test_board
 import test_game
 import test_strategies
