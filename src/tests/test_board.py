@@ -13,12 +13,52 @@ sys.path.insert(0,parentdir)
 from board import Board
 
 
+
+class ConstructorMethodBoardClass(unittest.TestCase):
+
+    def test_RaisesTypeErrorIfBoardArgumentCantBeConvertedToList(self):
+        self.assertRaises(TypeError, Board, 1)
+
+    def test_IterableBoardArgumentConvertedToList(self):
+        arg = (0, 1, 2, 3, 4, 5, 6, 'o', 'x')
+        board = Board(arg)
+        self.assertEqual(board.board, [0, 1, 2, 3, 4, 5, 6, 'o', 'x'])
+
+    def test_BoardArgumentTooShortRaisesValueError(self):
+        arg = [0, 1, 2, 3]
+        self.assertRaises(ValueError, Board, arg)
+
+    def test_BoardArgumentTooLongRaisesValueError(self):
+        arg = range(10)
+        self.assertRaises(ValueError, Board, arg)
+
+    def test_BoardArgumentWithInvalidElementRaisesValueError(self):
+        arg = [0, "1", 2, 3, 4, 5, 6, 7, 8]
+        self.assertRaises(ValueError, Board, arg)
+
+    def test_BoardArgumentWithInvalidElementRaisesValueError2(self):
+        arg = [0, 1, 2, None, 3, 4, 5, 6, 7, 8]
+        self.assertRaises(ValueError, Board, arg)
+
+    def test_BoardArgumentWithInvalidElementRaisesValueError3(self):
+        arg = [0, 's', 2, 3, 4, 5, 6, 7, 8]
+        self.assertRaises(ValueError, Board, arg)
+
+    def test_BoardArgumentWithIndexOutOfOrderRaisesValueError(self):
+        arg = [1, 1, 2, 3, 4, 5, 6, 7, 8]
+        self.assertRaises(ValueError, Board, arg)
+
+    def test_BoardArgumentWithInvalidGameStateRaisesValueError(self):
+        arg = ['x', 'x', 2, 3, 4, 5, 6, 7, 8]
+        self.assertRaises(ValueError, Board, arg)
+        
+
 class Helper(object):
 
     def set_boards(self):
         self.board1 = Board()
         self.board2 = Board([0, "x", "o", 3, "x", 5, "o", 7, 8])
-
+    
 
 class RowsAttributeBoardClassTest(unittest.TestCase, Helper):
 
@@ -72,8 +112,8 @@ class ComparisonOperatorBoardClassTest(unittest.TestCase):
 
     def setUp(self):
         self.board1 = Board(['o', 'x', 2, 'x', 'x', 'o', 6, 'o', 8])
-        self.board2 = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x'])
-        self.board3 = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x'])
+        self.board2 = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'x', 'x'])
+        self.board3 = Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'x', 'x'])
         
     def test_OnBoardWithDifferentFirstElementComparedBasedOnFirstElement(self):
         self.assertLess(self.board1, self.board2)
@@ -108,9 +148,8 @@ class ResultMethodBoardClassTest(unittest.TestCase):
         board = Board(["x", "x", "o", 3, "x", 5, "o", "o", "x"])
         self.assertResultReturnsPlay(board, 'x')
         
-
     def test_OnBoardWonByOOnDiagonalReturnsStringo(self):
-        board = Board([0, "x", "o", 3, "o", 5, "o", "x", 8])
+        board = Board(['x', "x", "o", 3, "o", 5, "o", "x", 8])
         self.assertResultReturnsPlay(board, 'o')
 
     def test_OnBoardWonByXOnRowReturnsStringx(self):
@@ -118,7 +157,7 @@ class ResultMethodBoardClassTest(unittest.TestCase):
         self.assertResultReturnsPlay(board, 'x')
 
     def test_OnBoardWithTieReturnsStringTie(self):
-        board = Board(["o", "o", "x", "x", "x", "o", "o", "x", "o"])
+        board = Board(["x", "x", "o", "o", "o", "x", "x", "o", "x"])
         result = board.result()
         self.assertEqual(result, 'Tie')
         
@@ -127,8 +166,8 @@ class PlaceMethodBoardClassTest(unittest.TestCase):
 
     def test_OnEmptyBoardAssignsPlayToIndex(self):
         board = Board()
-        board.place(8, 'o')
-        self.assertEqual(board, Board([0, 1, 2, 3, 4, 5, 6, 7, 'o']))
+        board.place(8, 'x')
+        self.assertEqual(board, Board([0, 1, 2, 3, 4, 5, 6, 7, 'x']))
 
     def test_OnSemiPopulatedBoardAssignsPlayToIndex(self):
         board = Board([0, "x", "o", 3, "x", 5, "o", 7, 8])
@@ -149,7 +188,7 @@ class NextPlayAttributeBoardClassTest(unittest.TestCase):
         self.assertNextPlayEquals(Board(x_first=False), 'o')
 
     def test_OnXFirstWithOneXReturnsStringo(self):
-        self.assertNextPlayEquals(Board([0, 1, 2, 3, 'x', 4, 5, 6, 7, 8]), 'o')
+        self.assertNextPlayEquals(Board([0, 1, 2, 3, 'x', 5, 6, 7, 8]), 'o')
 
     def test_OnXFirstWithEqualXOReturnsStringx(self):
         self.assertNextPlayEquals(Board(['x', 'o', 2, 3, 4, 5, 6, 7, 8]), 'x')
@@ -161,7 +200,7 @@ class NextPlayAttributeBoardClassTest(unittest.TestCase):
         self.assertNextPlayEquals(Board(['o', 'x', 2, 3, 4, 5, 6, 7, 8], x_first=False), 'o')
 
     def testOnFullBoardReturnsNone(self):
-        self.assertNextPlayEquals(Board(['x', 'o', 'o', 'x', 'x', 'o', 'o', 'o', 'x']), None)
+        self.assertNextPlayEquals(Board(['x', 'o', 'o', 'x', 'x', 'o', 'x', 'o', 'x']), None)
         
 
 class NextBoardsMethodBoardClassTest(unittest.TestCase):
@@ -203,7 +242,8 @@ def suite():
                     OpenIndicesAttributeBoardClassTest,
                     DiagonalsAttributeBoardClassTest,
                     ColumnsAttributeBoardClassTest,
-                    RowsAttributeBoardClassTest
+                    RowsAttributeBoardClassTest,
+                    ConstructorMethodBoardClass
                     ]
     suites = [unittest.TestLoader().loadTestsFromTestCase(test_class)
               for test_class in test_classes]

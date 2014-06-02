@@ -8,8 +8,8 @@ class Board(object):
     Instances of this class represent a board for playing tic-tac-toe.
 
     *Constructor arguments
-    initial_board (default=None): a list representing the initial board.
-        The list should be length 9, with entries being the integer corresponding
+    initial_board (default=None): an iterable representing the initial board.
+        The iterable should have 9 elements, elements being either the integer corresponding
         to the index, "x" or "o"
     x_first (bool; default=True): determines whether 'x' or 'o' goes first ('x' by default)
     '''
@@ -28,6 +28,26 @@ class Board(object):
         if initial_board is None:
             self.board = range(9)
         else:
+            length = len(initial_board)
+            if length < 9:
+                raise ValueError, "Too few elements in initial_board"
+            if length > 9:
+                raise ValueError, "Too many elements in initial_board"
+            for index, element in enumerate(initial_board):
+                if element in ('x', 'o'): continue
+                if element in range(9) and element == index: continue
+                raise ValueError, "Invalid element {}({}) in initial_board".format(element, type(element))
+            initial_board = list(initial_board)
+            # In a valid game, the number of x's minus the number of o's should
+            # be no more than 1, and if one is greater, that play should have
+            # gone first. 
+            x = initial_board.count('x')
+            o = initial_board.count('o')
+            if x == o: pass
+            elif o == x + 1 and not x_first: pass
+            elif x == o + 1 and x_first: pass
+            else:
+                raise ValueError, "Invalid board state. Board is not the result of a valid game"
             self.board = initial_board
         if x_first:
             self.first_play = 'x'
