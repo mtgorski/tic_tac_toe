@@ -3,3 +3,5 @@
 venv/*
 
 src/ttt_project/settings.py
+
+.idea/*
