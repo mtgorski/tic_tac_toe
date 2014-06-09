@@ -19,35 +19,42 @@ class PlayFunction(TestCase):
         self.url = '/play'
         setup_test_environment()
 
+    def response_to_new_game_post(self, player_first=True):
+        '''
+        Returns the response made when a new game is started.
+        '''
+        value = 'true' if player_first else 'false'
+        post_data = {'player_first': value}
+        return self.client.post(self.url, post_data)
+
     def test_postRequestUsesBoardTemplate(self):
-        post_data = {'player_first':'true'}
-        response = self.client.post(self.url, post_data)
+        response = self.response_to_new_game_post()
         template = 'ttt_app/board.html'
         self.assertTemplateUsed(response, template)
 
-    def test_getRequestRaises405(self):
+    def test_getRequestRespondsWithEmptyBoard(self):
         response = self.client.get(self.url)
-        self.assertIsInstance(response, HttpResponseNotAllowed)
+        expected = Board()
+        actual = response.context['board_object']
+        self.assertEqual(actual, expected)
 
     def test_playerFirstWithtNoBoardReturnsResponseContextWithEmptyBoard(self):
-        post_data = {'player_first':'true'}
-        response = self.client.post(self.url, post_data)
+        response = self.response_to_new_game_post()
         expected = Board()
         actual = response.context['board_object']
         self.assertEqual(expected, actual)
 
     def test_AIFirstWithNoBoardReturnsResponseContextWithOneMove(self):
-        post_data = {'player_first':'false'}
-        response = self.client.post(self.url, post_data)
+        response = self.response_to_new_game_post(player_first=False)
         board = Board()
         ai_move = board.place(*perfect(board))
         actual = response.context['board_object']
         self.assertEqual(actual, board)
 
     def test_PlayerMoveOnEmptyBoardReturnsResponseContextWithPlayerAndAIFirstMove(self):
-        post_data = dict(('board{}'.format(n), '-') for n in range(9))
+        post_data = {'board_str': '-'*9}
         post_data['player_first'] = 'true'
-        post_data['choice'] = '0'
+        post_data['choice0'] = 'X'
         response = self.client.post(self.url, post_data)
         # Player makes a move at 0, then perfect moves at 4
         expected = Board(['x', 1, 2, 3, 'o', 5, 6, 7, 8])
@@ -55,30 +62,75 @@ class PlayFunction(TestCase):
         self.assertEqual(actual, expected)
 
     def test_PlayerMakesGameEndingMoveRedirectsToResults(self):
-        post_data = {'board0':'x', 'board1': 'o', 'board2': 'x',
-                     'board3': 'o', 'board4': 'o', 'board5': 'x',
-                     'board6': 'o', 'board7': 'x', 'board8': '-'}
+        post_data = {'board_str': 'xoxooxox-'}
         post_data['player_first'] = 'true'
-        post_data['choice'] = '8'
+        post_data['choice8'] = 'X'
         response = self.client.post(self.url, post_data)
         self.assertRedirects(response, '/results')
 
     def test_AIMakesGameEndingMoveRedirectsToResult(self):
-        post_data = {'board0':'o', 'board1': 'x', 'board2': 'x',
-                     'board3': 'x', 'board4': 'x', 'board5': '-',
-                     'board6': 'o', 'board7': 'o', 'board8': '-'}
+        post_data = {'board_str': 'oxxxx-oo-'}
         post_data['player_first'] = 'false'
-        post_data['choice'] = '5'
+        post_data['choice5'] = 'O'
         response = self.client.post(self.url, post_data)
         self.assertRedirects(response, '/results')
 
+    def test_TemplateContainsInputTagDescribingWhoWentFirst1(self):
+        response = self.response_to_new_game_post(player_first=True)
+        tag = '<input type=\"hidden\" name=\"player_first\" value=\"true\">'
+        self.assertContains(response, tag, html=True)
 
+    def test_TemplateContainsInputTagDescribingWhoWentFirst2(self):
+        response = self.response_to_new_game_post(player_first=False)
+        tag = '<input type=\"hidden\" name=\"player_first\" value=\"false\">'
+        self.assertContains(response, tag, html=True)
+
+    def test_TemplateContainsInputTagDescribingTheBoard1(self):
+        response = self.response_to_new_game_post()
+        tag = '<input type=\"hidden\" name=\"board_str\" value=\"012345678">'
+        self.assertContains(response, tag, html=True)
+
+    def test_TemplateContainsInputTagDescribingTheBoard2(self):
+        response = self.response_to_new_game_post(player_first=False)
+        # construct the string representing the board after the
+        # perfect strategy plays
+        board = [str(i) for i in range(9)]
+        index, play = perfect(Board())
+        board[index] = play
+        board_str = ''.join(board)
+        tag = '<input type=\"hidden\" name=\"board_str\" value=\"{}\">'.format(board_str)
+        self.assertContains(response, tag, html=True)
+
+    def test_TemplateHasTagForEachPlayOnTheBoard1(self):
+        response = self.response_to_new_game_post(player_first=False)
+        tag = '<td class=\"xo\">X</td>'
+        self.assertContains(response, tag, 1, html=True)
+
+    def test_TemplateHasTagForEachPlayOnTheBoard2(self):
+        board = Board([0, 1, 2, 3, 'x', 5, 6, 7, 8])
+        board_str = '0123x5678'
+        post_data = {'board_str':board_str, 'player_first':'false',
+                     'choice0': 'O'}
+        response = self.client.post(self.url, post_data)
+        # the view will place the user's O and then the ai's x
+        tag = '<td class=\"xo\">X</td>'
+        self.assertContains(response, tag, 2, html=True)
+
+    def test_TemplateHasSubmitTagForOpenPlay1(self):
+        response = self.response_to_new_game_post()
+        tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"X\" name=\"choice0\">'
+        self.assertContains(response, tag, 1, html=True)
+
+    def test_TemplateHasSubmitTagForOpenPlay2(self):
+        response = self.response_to_new_game_post(player_first=False)
+        tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"O\" name=\"choice8\">'
+        self.assertContains(response, tag, 1, html=True)
 
 
 class ConstructBoardFunction(TestCase):
 
     def setUp(self):
-        self.post_dict = dict(('board{}'.format(n), '-') for n in range(9))
+        self.post_dict = {'board_str': '-'*9}
 
     def test_normalUse1(self):
         result = construct_board(self.post_dict)
@@ -86,9 +138,10 @@ class ConstructBoardFunction(TestCase):
         self.assertEqual(result, expected)
 
     def test_normalUse2(self):
-        self.post_dict['board0'] = 'x'
+        self.post_dict['board_str'] = 'x--------'
         result = construct_board(self.post_dict)
         init_board = range(9)
         init_board[0] = 'x'
         expected = Board(init_board)
         self.assertEqual(expected, result)
+

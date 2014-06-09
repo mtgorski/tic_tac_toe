@@ -50,45 +50,39 @@
 
           <div class="inner cover">
             <h1 class="cover-heading">Player (X) vs. Perfect (O).</h1>
-            <table>
-              <tbody>
-                <tr>
-                  <td class="xo">X</td>
-                  <td><div class="vbreak"></div></td>
-                  <td class="button-container"><button type="button" class="btn btn-info xobutton">O</button></td>
-                  <td><div class="vbreak"></div></td>
-                  <td class="xo">X</td>
-                </tr>
-                <tr>
-                  <td><hr></td>
-                  <td><hr></td>
-                  <td><hr></td>
-                  <td><hr></td>
-                  <td><hr></td>
-                </tr>
-                <tr>
-                  <td class="button-container"><button type="button" class="btn btn-info xobutton">O</button></td>
-                  <td><div class="vbreak"></div></td>
-                  <td class="xo">O</td>
-                  <td><div class="vbreak"></div></td>
-                  <td class="xo">X</td>
-                </tr>
-                <tr>
-                  <td><hr></td>
-                  <td><hr></td>
-                  <td><hr></td>
-                  <td><hr></td>
-                  <td><hr></td>
-                </tr>
-                <tr>
-                  <td class="button-container"><button type="button" class="btn btn-info xobutton">O</button></td>
-                  <td><div class="vbreak"></div></td>
-                  <td class="button-container"><button type="button" class="btn btn-info xobutton">O</button></td>
-                  <td><div class="vbreak"></div></td>
-                  <td class="xo">X</td>
-                </tr>
-              </tbody>
-            </table>
+            <form method="POST" action="/play"> {% csrf_token %}
+                <input type="hidden" name="player_first" value="{{ player_first }}">
+                <input type="hidden" name="board_str" value="{{ board_str }}">
+                <table>
+                    <tbody>
+                    <tr>
+                    {% for play in board_str %}
+                        {% if play == 'x' or play == 'o' %}
+                        <td class="xo">{{ play|upper }}</td>
+                        {% else %}
+                        <td class="button-container">
+                            <input type="submit" class="btn btn-info xobutton" value="{{ next_play }}"
+                               name="choice{{ forloop.counter0 }}">
+                        </td>
+                        {% endif %}
+                        {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}
+                    </tr>
+                    <tr>
+                        <td><hr></td>
+                        <td><hr></td>
+                        <td><hr></td>
+                        <td><hr></td>
+                        <td><hr></td>
+                    </tr>
+                    <tr>
+                        {% elif forloop.counter0 != 8 %}
+                        <td><div class="vbreak"></div></td>
+                        {% endif %}
+                    {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
           </div>
 
           <div class="mastfoot">
