@@ -44,7 +44,35 @@ class PlayFunction(TestCase):
         actual = response.context['board_object']
         self.assertEqual(actual, board)
 
-    
+    def test_PlayerMoveOnEmptyBoardReturnsResponseContextWithPlayerAndAIFirstMove(self):
+        post_data = dict(('board{}'.format(n), '-') for n in range(9))
+        post_data['player_first'] = 'true'
+        post_data['choice'] = '0'
+        response = self.client.post(self.url, post_data)
+        # Player makes a move at 0, then perfect moves at 4
+        expected = Board(['x', 1, 2, 3, 'o', 5, 6, 7, 8])
+        actual = response.context['board_object']
+        self.assertEqual(actual, expected)
+
+    def test_PlayerMakesGameEndingMoveRedirectsToResults(self):
+        post_data = {'board0':'x', 'board1': 'o', 'board2': 'x',
+                     'board3': 'o', 'board4': 'o', 'board5': 'x',
+                     'board6': 'o', 'board7': 'x', 'board8': '-'}
+        post_data['player_first'] = 'true'
+        post_data['choice'] = '8'
+        response = self.client.post(self.url, post_data)
+        self.assertRedirects(response, '/results')
+
+    def test_AIMakesGameEndingMoveRedirectsToResult(self):
+        post_data = {'board0':'o', 'board1': 'x', 'board2': 'x',
+                     'board3': 'x', 'board4': 'x', 'board5': '-',
+                     'board6': 'o', 'board7': 'o', 'board8': '-'}
+        post_data['player_first'] = 'false'
+        post_data['choice'] = '5'
+        response = self.client.post(self.url, post_data)
+        self.assertRedirects(response, '/results')
+
+
 
 
 class ConstructBoardFunction(TestCase):
