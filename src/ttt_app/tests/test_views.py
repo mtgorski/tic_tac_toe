@@ -17,40 +17,47 @@ class PlayFunction(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = '/play'
+        self.template = 'ttt_app/board.html'
         setup_test_environment()
 
     def response_to_new_game_post(self, player_first=True):
         '''
-        Returns the response made when a new game is started.
+        Returns the response made when a new game is started via
+        a post request with no board information.
         '''
         value = 'true' if player_first else 'false'
         post_data = {'player_first': value}
         return self.client.post(self.url, post_data)
 
+    def assertResponseContextContainsKeyValue(self, response, key, value):
+        '''
+        Checks that the key, value pair is in the response's context.
+        '''
+        context = response.context
+        expected = {key: value}
+        self.assertDictContainsSubset(expected, context)
+
+    def assertResponseContextRepresentsBoardAsExpected(self, response, expected):
+        self.assertResponseContextContainsKeyValue(response, 'board_str', expected)
+
     def test_postRequestUsesBoardTemplate(self):
         response = self.response_to_new_game_post()
-        template = 'ttt_app/board.html'
-        self.assertTemplateUsed(response, template)
+        self.assertTemplateUsed(response, self.template)
 
     def test_getRequestRespondsWithEmptyBoardStringInContext(self):
         response = self.client.get(self.url)
-        expected = '012345678'
-        actual = response.context['board_str']
-        self.assertEqual(actual, expected)
+        self.assertResponseContextRepresentsBoardAsExpected(response, '012345678')
 
     def test_playerFirstWithtNoBoardReturnsResponseContextWithEmptyBoardString(self):
         response = self.response_to_new_game_post()
-        expected = '012345678'
-        actual = response.context['board_str']
-        self.assertEqual(expected, actual)
+        self.assertResponseContextRepresentsBoardAsExpected(response, '012345678')
 
     def test_AIFirstWithNoBoardReturnsResponseContextWithOneMove(self):
         response = self.response_to_new_game_post(player_first=False)
         board = Board()
         board.place(*perfect(board))
-        expected = ''.join(str(i) for i in board.board)
-        actual = response.context['board_str']
-        self.assertEqual(actual, expected)
+        expected_value = ''.join(str(i) for i in board.board)
+        self.assertResponseContextRepresentsBoardAsExpected(response, expected_value)
 
     def test_PlayerMoveOnEmptyBoardReturnsResponseContextWithPlayerAndAIFirstMove(self):
         post_data = {'board_str': '-'*9}
@@ -58,9 +65,7 @@ class PlayFunction(TestCase):
         post_data['choice0'] = 'X'
         response = self.client.post(self.url, post_data)
         # Player makes a move at 0, then perfect moves at 4
-        expected = 'x123o5678'
-        actual = response.context['board_str']
-        self.assertEqual(actual, expected)
+        self.assertResponseContextRepresentsBoardAsExpected(response, 'x123o5678')
 
     def test_PlayerMakesGameEndingMoveRedirectsToResults(self):
         post_data = {'board_str': 'xoxooxox-'}
