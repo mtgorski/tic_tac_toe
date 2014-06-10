@@ -5,12 +5,15 @@ body {
   font-family: 'Jura', sans-serif;
 }
 
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+}
 .cover-heading {
-  margin-top: -3em;
-  margin-bottom: 1em;
-  padding-bottom: 1em;
   margin-left: auto;
-  margin-right:auto;
+  margin-right: auto;
+  padding: 2% 10%;
 }
 
 .masthead {
@@ -27,12 +30,8 @@ table {
   margin-right: auto;
 }
 
-h1 {
-  padding: 5% 10%;
-}
-
 .xo {
-  padding: 0px 32px;
+  padding: 0px 31px;
 }
 
 .button-container {
@@ -112,8 +111,14 @@ body {
   min-height: 100%;
 }
 .site-wrapper-inner {
-  display: table-cell;
+  display: block;
   vertical-align: top;
+}
+
+@media (min-width: 768px) {
+  .site-wrapper-inner {
+    margin-top: 100px;
+  }
 }
 .cover-container {
   margin-right: auto;
@@ -121,10 +126,11 @@ body {
 }
 
 /* Padding for spacing */
-.inner {
-  padding: 30px;
+@media (min-width: 768px) {
+  .inner {
+    padding: 30px;
+  }
 }
-
 
 /*
  * Header
@@ -220,7 +226,7 @@ body {
   }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   .masthead,
   .mastfoot,
   .cover-container {

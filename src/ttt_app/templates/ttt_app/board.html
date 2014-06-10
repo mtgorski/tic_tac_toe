@@ -9,7 +9,6 @@
     <meta name="author" content="">
 
     {% load staticfiles %}
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
     
     <title>3T</title>
     <!-- Font -->
@@ -20,14 +19,6 @@
     <!-- Custom styles for this template -->
     <link href="{% static 'ttt_app/css/custom.css' %}" rel="stylesheet">
 
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
 
   <body>
@@ -41,15 +32,15 @@
           <div class="masthead clearfix">
             <div class="inner">
               <h3 class="masthead-brand">3T</h3>
-              <ul class="nav masthead-nav navbar-static-top">
+              <ul class="nav masthead-nav navbar-collapse">
                 <li><a href="#">Stats</a></li>
                 <li><a href="#">Logout</a></li>
               </ul>
             </div>
           </div>
-
+          <h1 class="cover-heading">Player (X) vs. Perfect (O).</h1>
           <div class="inner cover">
-            <h1 class="cover-heading">Player (X) vs. Perfect (O).</h1>
+
             <form method="POST" action="/play"> {% csrf_token %}
                 <input type="hidden" name="player_first" value="{{ player_first }}">
                 <input type="hidden" name="board_str" value="{{ board_str }}">
@@ -96,11 +87,9 @@
 
     </div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/docs.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+
   </body>
 </html>
