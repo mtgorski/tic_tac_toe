@@ -1,9 +1,15 @@
 {% extends "ttt_app/base.html" %}
 
 {% block content %}
-        <form method="post" action="/play">
-            {% csrf_token %}
-            <input type="checkbox" name="player_first" value="true">
-            <input type="submit" value="GO">
-        </form>
+        <div class="inner cover launch">
+            <form method="post" action="/play">
+                {% csrf_token %}
+                <label>
+                    Go first?
+                    <input type="checkbox" name="player_first" value="true">
+                </label>
+                <br>
+                <input id="go-button" type="submit" value="GO">
+            </form>
+        </div>
 {% endblock %}
