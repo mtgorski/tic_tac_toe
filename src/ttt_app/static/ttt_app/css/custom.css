@@ -9,6 +9,8 @@ body {
   margin-top: -3em;
   margin-bottom: 1em;
   padding-bottom: 1em;
+  margin-left: auto;
+  margin-right:auto;
 }
 
 .masthead {
@@ -20,12 +22,13 @@ body {
 table {
   border-collapse: separate;
   font-size: 32px;
-  padding: 5% 27%;
+  padding: 5% 10%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 h1 {
   padding: 5% 10%;
-  vertical-align: center;
 }
 
 .xo {
@@ -33,7 +36,7 @@ h1 {
 }
 
 .button-container {
-  padding: 0px 14px;
+  padding: 0px 22px 0px 21px;
 }
 
 .btn-info {
