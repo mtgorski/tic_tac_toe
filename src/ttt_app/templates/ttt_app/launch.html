@@ -1,0 +1,9 @@
+{% extends "ttt_app/base.html" %}
+
+{% block content %}
+        <form method="post" action="/play">
+            {% csrf_token %}
+            <input type="checkbox" name="player_first" value="true">
+            <input type="submit" value="GO">
+        </form>
+{% endblock %}

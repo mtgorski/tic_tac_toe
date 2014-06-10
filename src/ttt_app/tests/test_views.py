@@ -12,21 +12,26 @@ from strategies import perfect
 from views import construct_board
 
 
-class PlayFunction(TestCase):
+class Helper(object):
+
+    def setup_client(self):
+        self.client = Client()
+        setup_test_environment()
+
+class PlayFunction(TestCase, Helper):
+
+    url = '/play'
 
     def setUp(self):
-        self.client = Client()
-        self.url = '/play'
+        self.setup_client()
         self.template = 'ttt_app/board.html'
-        setup_test_environment()
 
     def response_to_new_game_post(self, player_first=True):
         '''
         Returns the response made when a new game is started via
         a post request with no board information.
         '''
-        value = 'true' if player_first else 'false'
-        post_data = {'player_first': value}
+        post_data = {'player_first': 'true'} if player_first else {}
         return self.client.post(self.url, post_data)
 
     def assertResponseContextContainsKeyValue(self, response, key, value):
@@ -153,7 +158,6 @@ class PlayFunction(TestCase):
         self.assertContains(response, text)
 
 
-
 class ConstructBoardFunction(TestCase):
 
     def setUp(self):
@@ -172,3 +176,29 @@ class ConstructBoardFunction(TestCase):
         expected = Board(init_board)
         self.assertEqual(expected, result)
 
+
+class LaunchFunction(TestCase, Helper):
+
+    def setUp(self):
+        self.setup_client()
+        self.url = '/'
+
+    def response_to_get(self):
+        return self.client.get(self.url)
+
+    def test_getRequestReturnsResponseUsingLaunchTemplate(self):
+        template = 'ttt_app/launch.html'
+        self.assertTemplateUsed(self.response_to_get(), template)
+
+    def test_getRequestReturnsResponseUsingBaseTemplate(self):
+        template = 'ttt_app/base.html'
+        self.assertTemplateUsed(self.response_to_get(), template)
+
+    def test_getRequestReturnsResponseWithFormToPostToPlayFunction(self):
+        tag = '<form method=\"post\" action="{}">'.format(PlayFunction.url)
+        print tag
+        self.assertContains(self.response_to_get(), tag, 1, html=True)
+
+    def test_getRequestReturnsResponseWithCheckboxToGoFirst(self):
+        tag = '<input type=\"checkbox\" name=\"player_first\" value=\"true\">'
+        self.assertContains(self.response_to_get(), tag, 1, html=True)

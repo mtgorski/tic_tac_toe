@@ -24,11 +24,14 @@ def play(request):
         with the context {'board_object':<Board instance>,
         'player_first': <'true' or 'false'> }
     '''
-    # Only allow post requests b/c we always need info about the game
-    # being played
+    # If there's a get request, assume the user wants to go first
+    # If there's a post request with 'player_first' absent (since the
+    # checkbox hasn't been used) the player goes second
     player_first = request.POST.get('player_first')
     if player_first is None and request.method == 'GET':
         player_first = 'true'
+    elif player_first is None:
+        player_first = 'false'
     try:
         board = construct_board(request.POST)
         choice_key = filter(lambda x: x.startswith('choice'), request.POST.keys())[0]
@@ -80,3 +83,10 @@ def results(request):
     Displays the results of a game.
     '''
     return HttpResponse('The game is over.')
+
+
+def launch(request):
+    '''
+    This view returns the page for launching a game of tic-tac-toe.
+    '''
+    return render(request, 'ttt_app/launch.html')
