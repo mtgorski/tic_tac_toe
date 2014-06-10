@@ -38,7 +38,13 @@
               </ul>
             </div>
           </div>
-          <h1 class="cover-heading">Player (X) vs. Perfect (O).</h1>
+          <h1 class="cover-heading">
+              {% if player_first == 'true' %}
+              Player (X) vs. Perfect (O).
+              {% else %}
+              Player (O) vs. Perfect (X).
+              {% endif %}
+          </h1>
           <div class="inner cover">
 
             <form method="POST" action="/play"> {% csrf_token %}
@@ -88,8 +94,8 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/docs.min.js"></script>
+    <script src="{% static 'ttt_app/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ttt_app/js/docs.min.js' %}"></script>
 
   </body>
 </html>

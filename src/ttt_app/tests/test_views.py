@@ -132,6 +132,27 @@ class PlayFunction(TestCase):
         tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"O\" name=\"choice8\">'
         self.assertContains(response, tag, 1, html=True)
 
+    def test_WhenPlayerGoesFirstTemplateAssociatesPlayerWithX(self):
+        response = self.response_to_new_game_post()
+        text = 'Player (X)'
+        self.assertContains(response, text)
+
+    def test_WhenAIGoesFirstTemplateAssociatesAIWithX(self):
+        response = self.response_to_new_game_post(player_first=False)
+        text = 'Perfect (X)'
+        self.assertContains(response, text)
+
+    def test_WhenPlayerGoesFirstTemplateAssociatesAIWithO(self):
+        response = self.response_to_new_game_post()
+        text = 'Perfect (O)'
+        self.assertContains(response, text)
+
+    def test_WhenAIGoesFirstTemplateAssociatesPlayerWithO(self):
+        response = self.response_to_new_game_post(player_first=False)
+        text = 'Player (O)'
+        self.assertContains(response, text)
+
+
 
 class ConstructBoardFunction(TestCase):
 
