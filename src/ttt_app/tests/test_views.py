@@ -32,24 +32,25 @@ class PlayFunction(TestCase):
         template = 'ttt_app/board.html'
         self.assertTemplateUsed(response, template)
 
-    def test_getRequestRespondsWithEmptyBoard(self):
+    def test_getRequestRespondsWithEmptyBoardStringInContext(self):
         response = self.client.get(self.url)
-        expected = Board()
-        actual = response.context['board_object']
+        expected = '012345678'
+        actual = response.context['board_str']
         self.assertEqual(actual, expected)
 
-    def test_playerFirstWithtNoBoardReturnsResponseContextWithEmptyBoard(self):
+    def test_playerFirstWithtNoBoardReturnsResponseContextWithEmptyBoardString(self):
         response = self.response_to_new_game_post()
-        expected = Board()
-        actual = response.context['board_object']
+        expected = '012345678'
+        actual = response.context['board_str']
         self.assertEqual(expected, actual)
 
     def test_AIFirstWithNoBoardReturnsResponseContextWithOneMove(self):
         response = self.response_to_new_game_post(player_first=False)
         board = Board()
-        ai_move = board.place(*perfect(board))
-        actual = response.context['board_object']
-        self.assertEqual(actual, board)
+        board.place(*perfect(board))
+        expected = ''.join(str(i) for i in board.board)
+        actual = response.context['board_str']
+        self.assertEqual(actual, expected)
 
     def test_PlayerMoveOnEmptyBoardReturnsResponseContextWithPlayerAndAIFirstMove(self):
         post_data = {'board_str': '-'*9}
@@ -57,8 +58,8 @@ class PlayFunction(TestCase):
         post_data['choice0'] = 'X'
         response = self.client.post(self.url, post_data)
         # Player makes a move at 0, then perfect moves at 4
-        expected = Board(['x', 1, 2, 3, 'o', 5, 6, 7, 8])
-        actual = response.context['board_object']
+        expected = 'x123o5678'
+        actual = response.context['board_str']
         self.assertEqual(actual, expected)
 
     def test_PlayerMakesGameEndingMoveRedirectsToResults(self):

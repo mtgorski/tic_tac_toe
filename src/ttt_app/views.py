@@ -52,7 +52,7 @@ def play(request):
             board.place(*perfect(board))
     board_str = ''.join(str(i) for i in board.board)
     next_play = board.next_play.upper()
-    context = {'board_object':board, 'player_first': player_first,
+    context = {'player_first': player_first,
                'board_str': board_str, 'next_play': next_play}
     return render(request, 'ttt_app/board.html', context)
 
