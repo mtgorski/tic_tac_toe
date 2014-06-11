@@ -159,6 +159,12 @@ class PlayFunction(TestCase, Helper):
         response = self.response_to_ai_move_ties_game()
         self.assertResponseContextRepresentsBoardAsExpected(response, 'oxxxxooox')
 
+    def test_RemainingButtonsAreDisabled(self):
+        response = self.response_to_ai_wins_game_as_o()
+        tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"\" name=\"choice8\" disabled>'
+        self.assertContains(response, tag, 1, html=True)
+
+
     ###################################################################
     # Testing the board template
     ###################################################################

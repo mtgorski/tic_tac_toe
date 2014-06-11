@@ -27,7 +27,10 @@
                 {% else %}
                 <td class="button-container">
                     <input type="submit" class="btn btn-info xobutton" value="{{ next_play }}"
-                           name="choice{{ forloop.counter0 }}">
+                           name="choice{{ forloop.counter0 }}"
+                            {% if result %}
+                            disabled
+                            {% endif %}>
                 </td>
                 {% endif %}
                 {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}
