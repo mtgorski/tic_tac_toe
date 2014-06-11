@@ -98,9 +98,12 @@ hr {
 /* Links */
 a,
 a:focus,
-a:hover {
+a: visited,
+a:hover
+ {
   color: #fff;
 }
+
 
 /* Custom default button */
 .btn-default,

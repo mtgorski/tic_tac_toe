@@ -119,7 +119,7 @@ class PlayFunction(TestCase, Helper):
         self.assertTemplateUsed(self.response_to_player_move_ties_game(),
                                 'ttt_app/board.html')
 
-    def test_AIMakesGameTieingMoveReturnsResponseUsingResultsTemplate(self):
+    def test_AIMakesGameTieingMoveReturnsResponseUsingBoardTemplate(self):
         self.assertTemplateUsed(self.response_to_ai_move_ties_game(),
                                 'ttt_app/board.html')
 
@@ -164,6 +164,11 @@ class PlayFunction(TestCase, Helper):
         tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"\" name=\"choice8\" disabled>'
         self.assertContains(response, tag, 1, html=True)
 
+    def test_ResponseLinksBackToHomePage(self):
+        response = self.response_to_ai_move_ties_game()
+        tag = '<a href="{}"'.format(LaunchFunction.url)
+        # One link for the navbar, one in the main content section
+        self.assertContains(response, tag, 2)
 
     ###################################################################
     # Testing the board template
@@ -262,9 +267,10 @@ class ConstructBoardFunction(TestCase):
 
 class LaunchFunction(TestCase, Helper):
 
+    url = '/'
+
     def setUp(self):
         self.setup_client()
-        self.url = '/'
 
     def response_to_get(self):
         return self.client.get(self.url)
