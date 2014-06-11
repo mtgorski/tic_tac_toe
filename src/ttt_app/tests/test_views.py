@@ -1,6 +1,7 @@
 from django.test.utils import setup_test_environment
 from django.test import TestCase, Client
 from django.http import HttpResponseNotAllowed
+from django.core.urlresolvers import reverse
 
 import os, sys, inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -20,7 +21,7 @@ class Helper(object):
 
 class PlayFunction(TestCase, Helper):
 
-    url = '/play'
+    url = reverse('3T:play')
 
     def setUp(self):
         self.setup_client()
@@ -267,7 +268,7 @@ class ConstructBoardFunction(TestCase):
 
 class LaunchFunction(TestCase, Helper):
 
-    url = '/'
+    url = reverse('3T:launch')
 
     def setUp(self):
         self.setup_client()

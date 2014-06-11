@@ -2,7 +2,7 @@
 
 {% block content %}
         <div class="inner cover launch">
-            <form method="post" action="/play">
+            <form method="post" action="{% url '3T:play' %}">
                 {% csrf_token %}
                 <label>
                     Go first?

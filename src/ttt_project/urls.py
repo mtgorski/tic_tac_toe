@@ -9,7 +9,5 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^play$', 'ttt_app.views.play'),
-    url(r'^results$', 'ttt_app.views.results'),
-    url(r'^$', 'ttt_app.views.launch')
+    url(r'^3T/', include('ttt_app.urls', namespace='3T'))
 )
