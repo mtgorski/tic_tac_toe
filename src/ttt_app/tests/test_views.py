@@ -246,6 +246,11 @@ class PlayFunction(TestCase, Helper):
         text = 'Player (O)'
         self.assertContains(response, text)
 
+    def test_TemplateContainsFormToPostToPlayURL(self):
+        response = self.response_to_new_game_post()
+        tag = '<form method="post" action="{}"'.format(self.url)
+        self.assertContains(response, tag)
+
 
 class ConstructBoardFunction(TestCase):
 

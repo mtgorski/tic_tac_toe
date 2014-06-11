@@ -15,7 +15,7 @@
 {% block content %}
 <div class="inner cover">
 
-    <form method="POST" action="/play"> {% csrf_token %}
+    <form method="post" action="{% url '3T:play' %}"> {% csrf_token %}
         <input type="hidden" name="player_first" value="{{ player_first }}">
         <input type="hidden" name="board_str" value="{{ board_str }}">
         <table>
