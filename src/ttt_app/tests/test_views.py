@@ -26,6 +26,10 @@ class PlayFunction(TestCase, Helper):
         self.setup_client()
         self.template = 'ttt_app/board.html'
 
+    ###################################################################
+    # Helper methods
+    ###################################################################
+
     def response_to_new_game_post(self, player_first=True):
         '''
         Returns the response made when a new game is started via
@@ -42,8 +46,34 @@ class PlayFunction(TestCase, Helper):
         expected = {key: value}
         self.assertDictContainsSubset(expected, context)
 
+    def response_to_player_move_ties_game(self):
+        post_data = {'board_str': 'xoxooxox8'}
+        post_data['player_first'] = 'true'
+        post_data['choice8'] = 'X'
+        return self.client.post(self.url, post_data)
+
+    def response_to_ai_move_ties_game(self):
+        post_data = {'board_str': 'oxxxx5oo8'}
+        post_data['player_first'] = 'false'
+        post_data['choice5'] = 'O'
+        return self.client.post(self.url, post_data)
+
+    def response_to_ai_wins_game_as_o(self):
+        post_data = {'board_str': 'oxx3x5oo8', 'player_first': 'true',
+                     'choice5': 'X'}
+        return self.client.post(self.url, post_data)
+
+    def response_to_ai_wins_game_as_x(self):
+        post_data = {'board_str': 'xoxox5678', 'player_first': 'false',
+                     'choice5': 'O'}
+        return self.client.post(self.url, post_data)
+
     def assertResponseContextRepresentsBoardAsExpected(self, response, expected):
         self.assertResponseContextContainsKeyValue(response, 'board_str', expected)
+
+    ###################################################################
+    # Tests
+    ###################################################################
 
     def test_postRequestUsesBoardTemplate(self):
         response = self.response_to_new_game_post()
@@ -65,26 +95,73 @@ class PlayFunction(TestCase, Helper):
         self.assertResponseContextRepresentsBoardAsExpected(response, expected_value)
 
     def test_PlayerMoveOnEmptyBoardReturnsResponseContextWithPlayerAndAIFirstMove(self):
-        post_data = {'board_str': '-'*9}
+        post_data = {'board_str': '012345678'}
         post_data['player_first'] = 'true'
         post_data['choice0'] = 'X'
         response = self.client.post(self.url, post_data)
         # Player makes a move at 0, then perfect moves at 4
         self.assertResponseContextRepresentsBoardAsExpected(response, 'x123o5678')
 
-    def test_PlayerMakesGameEndingMoveRedirectsToResults(self):
-        post_data = {'board_str': 'xoxooxox-'}
-        post_data['player_first'] = 'true'
-        post_data['choice8'] = 'X'
-        response = self.client.post(self.url, post_data)
-        self.assertRedirects(response, '/results')
+    ###################################################################
+    # Testing the end of the game
+    ###################################################################
 
-    def test_AIMakesGameEndingMoveRedirectsToResult(self):
-        post_data = {'board_str': 'oxxxx-oo-'}
-        post_data['player_first'] = 'false'
-        post_data['choice5'] = 'O'
-        response = self.client.post(self.url, post_data)
-        self.assertRedirects(response, '/results')
+    def test_PlayerMakesGameTieingMoveReturnsResponseUsingResultsTemplate(self):
+        self.assertTemplateUsed(self.response_to_player_move_ties_game(),
+                                'ttt_app/results.html')
+
+    def test_AIMakesGameTieingMoveReturnsResponseUsingResultsTemplate(self):
+        self.assertTemplateUsed(self.response_to_ai_move_ties_game(),
+                                'ttt_app/results.html')
+
+    def test_PlayerMakesGameEndingMoveReturnsResponseUsingBoardTemplate(self):
+        # Since results.html should extend board.html
+        self.assertTemplateUsed(self.response_to_player_move_ties_game(),
+                                'ttt_app/board.html')
+
+    def test_AIMakesGameTieingMoveReturnsResponseUsingResultsTemplate(self):
+        self.assertTemplateUsed(self.response_to_ai_move_ties_game(),
+                                'ttt_app/board.html')
+
+    def test_PlayerMakesGameTieingMoveReturnsResponseWithTieResultInContext(self):
+        response = self.response_to_player_move_ties_game()
+        self.assertResponseContextContainsKeyValue(response, 'result', 'Tie')
+
+    def test_AIMakesGameTieingMoveReturnsResponseWithTieResultInContext(self):
+        response = self.response_to_ai_move_ties_game()
+        self.assertResponseContextContainsKeyValue(response, 'result', 'Tie')
+
+    def test_AIWinsGameAsOReturnsResponseWithOResultInContext(self):
+        response = self.response_to_ai_wins_game_as_o()
+        self.assertResponseContextContainsKeyValue(response, 'result', 'o')
+
+    def test_AITiesGameResponseContainsResultDescription(self):
+        response = self.response_to_ai_move_ties_game()
+        self.assertContains(response, 'It\'s a tie!')
+
+    def test_PlayerTiesGameResponseContainsResultDescription(self):
+        response = self.response_to_player_move_ties_game()
+        self.assertContains(response, 'It\'s a tie!')
+
+    def test_AIWinsGameAsOReturnsResponseWithResultDescription(self):
+        response = self.response_to_ai_wins_game_as_o()
+        self.assertContains(response, 'Perfect (O) Wins!')
+
+    def test_AIWinsGameAsXReturnsResponseWithResultDescription(self):
+        response = self.response_to_ai_wins_game_as_x()
+        self.assertContains(response, 'Perfect (X) Wins!')
+
+    def test_PlayerTiesGameResponseContextDescribesBoard(self):
+        response = self.response_to_player_move_ties_game()
+        self.assertResponseContextRepresentsBoardAsExpected(response, 'xoxooxoxx')
+
+    def test_AITiesGameResponseContextDescribeBoard(self):
+        response = self.response_to_ai_move_ties_game()
+        self.assertResponseContextRepresentsBoardAsExpected(response, 'oxxxxooox')
+
+    ###################################################################
+    # Testing the board template
+    ###################################################################
 
     def test_TemplateContainsInputTagDescribingWhoWentFirst1(self):
         response = self.response_to_new_game_post(player_first=True)
@@ -195,9 +272,8 @@ class LaunchFunction(TestCase, Helper):
         self.assertTemplateUsed(self.response_to_get(), template)
 
     def test_getRequestReturnsResponseWithFormToPostToPlayFunction(self):
-        tag = '<form method=\"post\" action="{}">'.format(PlayFunction.url)
-        print tag
-        self.assertContains(self.response_to_get(), tag, 1, html=True)
+        tag = '<form method=\"post\" action=\"{}\">'.format(PlayFunction.url)
+        self.assertContains(self.response_to_get(), tag, 1)
 
     def test_getRequestReturnsResponseWithCheckboxToGoFirst(self):
         tag = '<input type=\"checkbox\" name=\"player_first\" value=\"true\">'

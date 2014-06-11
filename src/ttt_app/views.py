@@ -34,17 +34,22 @@ def play(request):
         player_first = 'false'
     try:
         board = construct_board(request.POST)
-        choice_key = filter(lambda x: x.startswith('choice'), request.POST.keys())[0]
+        choice_key = filter(lambda x: x.startswith('choice'),
+                            request.POST.keys())[0]
         index = int(choice_key[-1])
         play = board.next_play
         board.place(index, play)
         result = board.result()
         if result in ('x', 'o', 'Tie'):
-            return HttpResponseRedirect('/results')
+            board_str = ''.join(str(i) for i in board.board)
+            context = {'result': 'Tie', 'board_str': board_str}
+            return render(request, 'ttt_app/results.html', context)
         board.place(*perfect(board))
         result = board.result()
         if result in ('x', 'o', 'Tie'):
-            return HttpResponseRedirect('/results')
+            board_str = ''.join(str(i) for i in board.board)
+            context = {'result': result, 'board_str': board_str}
+            return render(request, 'ttt_app/results.html', context)
     # KeyError will be raised by construct_board if the post request
     # lacks the key 'board<n>' for some n in range(9), indicating
     # that the game has just been launched or that a faulty post

@@ -1,0 +1,10 @@
+{% extends "ttt_app/board.html" %}
+{% block header %}
+<h1 class="cover-heading">
+        {% if result != "Tie" %}
+        Perfect ({{ result|upper }}) Wins!
+        {% else %}
+        It's a tie!
+        {% endif %}
+</h1>
+{% endblock %}

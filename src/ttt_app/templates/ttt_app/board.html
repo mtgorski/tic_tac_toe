@@ -1,5 +1,6 @@
 {% extends "ttt_app/base.html" %}
-{% block content %}
+
+{% block header %}
 <h1 class="cover-heading">
     {% if player_first == 'true' %}
     Player (X) vs. Perfect (O).
@@ -7,6 +8,11 @@
     Player (O) vs. Perfect (X).
     {% endif %}
 </h1>
+{% endblock %}
+
+
+
+{% block content %}
 <div class="inner cover">
 
     <form method="POST" action="/play"> {% csrf_token %}
