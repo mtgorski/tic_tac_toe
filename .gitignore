@@ -2,6 +2,6 @@
 
 venv/*
 
-src/ttt_project/settings.py
+src/ttt_project/local_settings.py
 
 .idea/*
