@@ -1,5 +1,7 @@
 '''
 This module defines a class for representing games of tic-tac-toe.
+It plays no role in the web application version, but is retained since
+it's useful for testing AI strategies.
 '''
 
 import copy
@@ -113,9 +115,3 @@ class Game(object):
         the game is not over, 'None'.
         '''
         return self.board.result()
-
-
-if __name__ == "__main__":
-    import strategies
-    g = Game(strategies.human, strategies.random_strat, "human", "random")
-    g.play_game(display=True)

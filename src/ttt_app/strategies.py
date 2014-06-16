@@ -8,7 +8,6 @@ import random
 import copy
 import cPickle
 
-import user_input
 
 '''
 Here is an explanation of the "perfect" strategy.
@@ -125,28 +124,6 @@ def random_strat(board):
     return index, play
 
 
-def human(board, display=False):
-    '''
-    This strategy asks the user where to put the next play.
-
-    *Arguments
-    board (board.Board instance): the current tic-tac-toe board
-    display (bool; default=False): determines whether the board
-        should be displayed prior to asking for input
-
-    *Returns: a tuple of the form (board index, play)
-
-    *Raises: ValueError, if there are no plays left to make on the board
-    '''
-    play = board.next_play
-    if play is None:
-        raise ValueError, "there are no plays to make on this board"
-    if display:
-        print board
-        print "\n"
-    options = [str(i) for i in board.open_indices]
-    index = int(user_input.get_input("Where would you like to place your %s?"%(play), options))
-    return index, play
 
 
 

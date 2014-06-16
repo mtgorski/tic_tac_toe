@@ -1,0 +1,11 @@
+{% extends "ttt_app/board.html" %}
+{% block header %}
+<h1 class="cover-heading">
+        {% if result != "Tie" %}
+        Perfect ({{ result|upper }}) Wins!
+        {% else %}
+        It's a tie!
+        {% endif %}
+</h1>
+<a href="{% url '3T:launch' %}">Play again</a>
+{% endblock %}

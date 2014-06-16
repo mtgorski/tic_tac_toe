@@ -9,7 +9,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from strategies import random_strat, is_acceptable, perfect, human
+from strategies import random_strat, is_acceptable, perfect
 from board import Board
 from game import Game
 
@@ -44,13 +44,6 @@ class RandomStratFunctionTest(unittest.TestCase):
 
     def test_OnFullBoardRaisesValueError(self):
         self.assertRaises(ValueError, random_strat, self.full)
-
-
-class HumanFunctionTest(unittest.TestCase):
-    
-    def test_OnFullBoardRaisesValueError(self):
-        full = Board(['x', 'o', 'x', 'o', 'x', 'o', 'x', 'o', 'x'])
-        self.assertRaises(ValueError, human, self.full)
 
 
 class Helper(object):
@@ -172,12 +165,4 @@ class IsAcceptableFunctionTest(unittest.TestCase, Helper):
 
 
 
-def suite():
-    test_classes = [IsAcceptableFunctionTest, PerfectFunctionTest, RandomStratFunctionTest]
-    suites = [unittest.TestLoader().loadTestsFromTestCase(test_class)
-              for test_class in test_classes]
-    return unittest.TestSuite(suites)
 
-
-if __name__ == "__main__":
-    unittest.TextTestRunner(verbosity=2).run(suite())

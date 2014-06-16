@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    {% load staticfiles %}
+
+    <title>3T</title>
+    <!-- Font -->
+    <link href='http://fonts.googleapis.com/css?family=Jura' rel='stylesheet' type='text/css'>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'ttt_app/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'ttt_app/css/custom.css' %}" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand"><a href="{% url '3T:launch' %}">3T</a></h3>
+              <!--
+                Not in the first version
+                <ul class="nav masthead-nav navbar-collapse">
+                <li><a href="#">Stats</a></li>
+                <li><a href="#">Logout</a></li>
+              </ul>-->
+            </div>
+          </div>
+
+         {% block header %}
+         {% endblock %}
+
+         {% block content %}
+         {% endblock %}
+
+          <div class="mastfoot">
+            <div class="inner">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{% static 'ttt_app/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ttt_app/js/docs.min.js' %}"></script>
+
+  </body>
+</html>
