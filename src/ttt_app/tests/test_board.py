@@ -250,5 +250,4 @@ def suite():
     return unittest.TestSuite(suites)
     
 
-if __name__ == "__main__":
-   unittest.TextTestRunner(verbosity=2).run(suite())
+
