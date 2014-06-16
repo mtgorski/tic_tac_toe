@@ -254,17 +254,14 @@ class PlayFunction(TestCase, Helper):
 
 class ConstructBoardFunction(TestCase):
 
-    def setUp(self):
-        self.post_dict = {'board_str': '-'*9}
 
     def test_normalUse1(self):
-        result = construct_board(self.post_dict)
+        result = construct_board('---------')
         expected = Board()
         self.assertEqual(result, expected)
 
     def test_normalUse2(self):
-        self.post_dict['board_str'] = 'x--------'
-        result = construct_board(self.post_dict)
+        result = construct_board('x--------')
         init_board = range(9)
         init_board[0] = 'x'
         expected = Board(init_board)
