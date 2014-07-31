@@ -4,6 +4,6 @@ venv/*
 
 hvenv
 
-src/ttt_project/local_settings.py
+local_settings.py
 
 .idea/*
