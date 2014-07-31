@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-import views
+from ttt_app import views
 
 
 urlpatterns = patterns('',

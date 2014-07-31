@@ -1,15 +1,18 @@
+import sys
+import inspect
+
 from django.test.utils import setup_test_environment
 from django.test import TestCase, Client
-from django.http import HttpResponseNotAllowed
 from django.core.urlresolvers import reverse
+import os
 
-import os, sys, inspect
+
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from board import Board
-from strategies import perfect
+from ttt_app.board import Board
+from ttt_app.strategies import perfect
 from views import construct_board
 
 
@@ -21,11 +24,13 @@ class Helper(object):
 
 class PlayFunction(TestCase, Helper):
 
-    url = reverse('3T:play')
+    urls = "test_urls"
+
 
     def setUp(self):
         self.setup_client()
         self.template = 'ttt_app/board.html'
+        self.url = reverse('3T:play')
 
     ###################################################################
     # Helper methods
@@ -167,7 +172,7 @@ class PlayFunction(TestCase, Helper):
 
     def test_ResponseLinksBackToHomePage(self):
         response = self.response_to_ai_move_ties_game()
-        tag = '<a href="{}"'.format(LaunchFunction.url)
+        tag = '<a href="{}"'.format(reverse("3T:launch"))
         # One link for the navbar, one in the main content section
         self.assertContains(response, tag, 2)
 
@@ -270,10 +275,11 @@ class ConstructBoardFunction(TestCase):
 
 class LaunchFunction(TestCase, Helper):
 
-    url = reverse('3T:launch')
+    urls = "test_urls"
 
     def setUp(self):
         self.setup_client()
+        self.url = reverse('3T:launch')
 
     def response_to_get(self):
         return self.client.get(self.url)
@@ -287,7 +293,7 @@ class LaunchFunction(TestCase, Helper):
         self.assertTemplateUsed(self.response_to_get(), template)
 
     def test_getRequestReturnsResponseWithFormToPostToPlayFunction(self):
-        tag = '<form method=\"post\" action=\"{}\">'.format(PlayFunction.url)
+        tag = '<form method=\"post\" action=\"{}\">'.format(self.url)
         self.assertContains(self.response_to_get(), tag, 1)
 
     def test_getRequestReturnsResponseWithCheckboxToGoFirst(self):

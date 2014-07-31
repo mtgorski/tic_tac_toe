@@ -3,14 +3,18 @@ Contains the test suite for tic-tac-toe strategies.
 '''
 
 import unittest
-import os,sys,inspect
+import sys
+import inspect
+
+import os
+
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from strategies import random_strat, is_acceptable, perfect
-from board import Board
+from ttt_app.strategies import random_strat, is_acceptable, perfect
+from ttt_app.board import Board
 from game import Game
 
 
