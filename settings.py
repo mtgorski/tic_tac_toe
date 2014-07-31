@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = False
 
@@ -87,3 +87,11 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+if not DEBUG:
+   AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+   AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+   AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+   STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+   S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+   STATIC_URL = S3_URL
