@@ -13,7 +13,7 @@ sys.path.insert(0,parentdir)
 
 from ttt_app.board import Board
 from ttt_app.strategies import perfect
-from views import construct_board
+from views import construct_board, advance_helper
 
 
 class Helper(object):
@@ -21,6 +21,14 @@ class Helper(object):
     def setup_client(self):
         self.client = Client()
         setup_test_environment()
+
+    def assertResponseContextContainsKeyValue(self, response, key, value):
+        '''
+        Checks that the key, value pair is in the response's context.
+        '''
+        context = response.context
+        expected = {key: value}
+        self.assertDictContainsSubset(expected, context)
 
 class PlayFunction(TestCase, Helper):
 
@@ -43,14 +51,6 @@ class PlayFunction(TestCase, Helper):
         '''
         post_data = {'player_first': 'true'} if player_first else {}
         return self.client.post(self.url, post_data)
-
-    def assertResponseContextContainsKeyValue(self, response, key, value):
-        '''
-        Checks that the key, value pair is in the response's context.
-        '''
-        context = response.context
-        expected = {key: value}
-        self.assertDictContainsSubset(expected, context)
 
     def response_to_player_move_ties_game(self):
         post_data = {'board_str': 'xoxooxox8'}
@@ -255,6 +255,42 @@ class PlayFunction(TestCase, Helper):
         response = self.response_to_new_game_post()
         tag = '<form method="post" action="{}"'.format(self.url)
         self.assertContains(response, tag)
+
+class AdvanceHelperFunctionTest(TestCase, Helper):
+
+
+    def test_OnEmptyBoard_ReturnsFirstMove(self):
+        result = advance_helper('false', '---------')
+        self.assertDictContainsSubset({'board': 'x--------'}, result)
+
+    def test_OnEmptyBoard_NoOneWins(self):
+        result = advance_helper('false', '---------')
+        self.assertDictContainsSubset({'wins': ''}, result)
+
+    def test_OnMidGameBoard_UpdatesBoardWithNextMove1(self):
+        result = advance_helper('true', 'o---xx---')
+        self.assertDictContainsSubset({'board' : 'o--oxx---'}, result)
+
+    def test_OnMidGameBoard_UpdatesBoardWithNextMove2(self):
+        result = advance_helper('false', 'xxo-o----')
+        self.assertDictContainsSubset({'board' : 'xxo-o-x--'}, result)
+
+    def test_OnMidGameBoard_NoOneWins(self):
+        result = advance_helper('true', 'o---xx---')
+        self.assertDictContainsSubset({'wins' : ''}, result)
+
+    def test_OnTiePassedIn_ReportsTie(self):
+        result = advance_helper('false', 'xxoooxxxo')
+        self.assertDictContainsSubset({'wins' : 'tie'}, result)
+
+    def test_OnXWinPassedIn_ReportsXWin(self):
+        result = advance_helper('false', 'xxxoo----')
+        self.assertDictContainsSubset({'wins': 'x'}, result)
+
+    def test_OnOWinPassedIn_ReportsOWin(self):
+        result = advance_helper('true', 'oooxx-x--')
+        self.assertDictContainsSubset({'wins': 'o'}, result)
+
 
 
 class ConstructBoardFunction(TestCase):
