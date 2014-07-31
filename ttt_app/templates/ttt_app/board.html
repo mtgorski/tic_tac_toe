@@ -15,24 +15,16 @@
 {% block content %}
 <div class="inner cover">
 
-    <form method="post" action="{% url '3T:play' %}"> {% csrf_token %}
-        <input type="hidden" name="player_first" value="{{ player_first }}">
-        <input type="hidden" name="board_str" value="{{ board_str }}">
         <table>
             <tbody>
             <tr>
-                {% for play in board_str %}
-                {% if play == 'x' or play == 'o' %}
-                <td class="xo">{{ play|upper }}</td>
-                {% else %}
+                {% for i in "123456789" %}
+
                 <td class="button-container">
-                    <input type="submit" class="btn btn-info xobutton" value="{{ next_play }}"
-                           name="choice{{ forloop.counter0 }}"
-                            {% if result %}
-                            disabled
-                            {% endif %}>
+                    <button type="button" class="btn btn-info xobutton"
+                           name="choice{{ forloop.counter0 }}">
+                    </button>
                 </td>
-                {% endif %}
                 {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}
             </tr>
             <tr>
@@ -50,6 +42,6 @@
             </tr>
             </tbody>
         </table>
-    </form>
+
 </div>
 {% endblock %}
