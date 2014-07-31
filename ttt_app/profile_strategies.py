@@ -4,9 +4,8 @@ This module profiles the perfect strategy.
 
 import cProfile
 
-
 import strategies
-import game
+from ttt_app import game
 
 
 def play_games(calls):

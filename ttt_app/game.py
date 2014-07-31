@@ -6,7 +6,7 @@ it's useful for testing AI strategies.
 
 import copy
 
-from board import Board
+from ttt_app.board import Board
 
 
 class Game(object):

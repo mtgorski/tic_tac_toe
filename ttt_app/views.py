@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
-from django.template import RequestContext
+from django.http import HttpResponse
 
-from board import Board
-from strategies import perfect
+from ttt_app.board import Board
+from ttt_app.strategies import perfect
 
 # Create your views here.
 def play(request):

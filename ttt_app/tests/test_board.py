@@ -2,15 +2,18 @@
 Contains the test suite for the Board class from board.py
 '''
 
-
 import unittest
-import os,sys,inspect
+import sys
+import inspect
+
+import os
+
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from board import Board
+from ttt_app.board import Board
 
 
 
