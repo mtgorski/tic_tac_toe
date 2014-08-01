@@ -36,7 +36,10 @@ function advance() {
                     {
                         showResult();
                     }
-                }
+                },
+                // player shouldn't be able to click buttons while waiting for a response
+                async: false
+
            });
 }
 
