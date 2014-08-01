@@ -65,26 +65,6 @@ class PlayFunction(TestCase, Helper):
     # Testing the board template
     ###################################################################
 
-    def test_TemplateContainsInputTagDescribingWhoWentFirst1(self):
-        response = self.response_to_new_game_post(player_first=True)
-        tag = '<input type=\"hidden\" name=\"player_first\" value=\"true\">'
-        self.assertContains(response, tag, html=True)
-
-    def test_TemplateContainsInputTagDescribingWhoWentFirst2(self):
-        response = self.response_to_new_game_post(player_first=False)
-        tag = '<input type=\"hidden\" name=\"player_first\" value=\"false\">'
-        self.assertContains(response, tag, html=True)
-
-    def test_TemplateHasSubmitTagForOpenPlay1(self):
-        response = self.response_to_new_game_post()
-        tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"X\" name=\"choice0\">'
-        self.assertContains(response, tag, 1, html=True)
-
-    def test_TemplateHasSubmitTagForOpenPlay2(self):
-        response = self.response_to_new_game_post(player_first=False)
-        tag = '<input type=\"submit\" class=\"btn btn-info xobutton\" value=\"O\" name=\"choice8\">'
-        self.assertContains(response, tag, 1, html=True)
-
     def test_WhenPlayerGoesFirstTemplateAssociatesPlayerWithX(self):
         response = self.response_to_new_game_post()
         text = 'Player (X)'
@@ -179,7 +159,8 @@ class LaunchFunction(TestCase, Helper):
         self.assertTemplateUsed(self.response_to_get(), template)
 
     def test_getRequestReturnsResponseWithFormToPostToPlayFunction(self):
-        tag = '<form method=\"post\" action=\"{0}\">'.format(self.url)
+        play_url = reverse("3T:play")
+        tag = '<form method=\"post\" action=\"{0}\">'.format(play_url)
         self.assertContains(self.response_to_get(), tag, 1)
 
     def test_getRequestReturnsResponseWithCheckboxToGoFirst(self):
