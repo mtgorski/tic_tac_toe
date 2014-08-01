@@ -5,8 +5,11 @@ import json
 from ttt_app.board import Board
 from ttt_app.strategies import perfect
 
-# Create your views here.
 def play(request):
+    '''
+    A request handler responsible for rendering the game board html and
+    passing the required information to game-handling javascript.
+    '''
     player_first = request.POST.get('player_first')
     if player_first is None and request.method == 'GET':
         player_first = 'true'
@@ -18,22 +21,36 @@ def play(request):
 
 def advance(request, player_first, board):
     '''
-    A request handler that mediates between the javascript
-    game logic and the backend game strategy code. Given
-    a game state, the response returns the strategy's next move,
-    if any, and the result of the game, if any.
+    A request handler that mediates between the javascript game logic
+    and the backend game strategy code. Given a game state, the response
+    returns the AI's next move, if any, and the result of the game, if any.
+
+    :param player_first: string representing whether the player went first
+        ('true' or false')
+    :param board: string representing the state of the board. Length 9 each
+        character being 'x', 'o' or '-'
+    :returns: JSON response of the form {'board' : '-x--o----', 'wins' : ''},
+        where 'wins' can be either '', 'x', 'o' or 'tie'.
     '''
     response = advance_helper(player_first, board)
     return HttpResponse(json.dumps(response), content_type="application/json")
+
 
 # There's an inexplicable problem with django trying to test
 # the urls that would route advance, so this intermediate function
 # exists to facilitate testing
 def advance_helper(player_first, board_string):
     '''
-    Given a game state represented by a strings, updates that state
+    Given a game state represented by a string, updates that state
     with the perfect strategy's next move, if any and the result
     of the game, if any.
+
+    :param player_first: string representing whether the player went first
+        ('true' or false')
+    :param board: string representing the state of the board. Length 9 each
+        character being 'x', 'o' or '-'
+    :returns: dictionary of the form {'board' : '-x--o----', 'wins' : ''},
+        where 'wins' can be either '', 'x', 'o' or 'tie'.
     '''
     board = construct_board(board_string)
     result = board.result()
@@ -47,9 +64,14 @@ def advance_helper(player_first, board_string):
     result = result.lower()
     return {'board' : board_string, 'wins': result}
 
+
 def construct_board_str(board):
     '''
-    Constructs a string represent of a board from a tic-tac-toe board.
+    Constructs a string representation of a board from a tic-tac-toe
+    board object.
+
+    :param board: board.Board instance
+    :returns: string length 9, each character being 'x', 'o' or '-'
     '''
     result = []
     for i in board.board:
@@ -64,9 +86,9 @@ def construct_board(board_str):
     '''
     Constructs a tic-tac-toe board from a string representing the board.
 
-    Expects board_str = <length 9 str, each entry being in -, x or o>
+    :param board_str: length 9 string, each character being in -, x or o>
 
-    *Returns: Board object
+    :returns: board.Board object
     '''
     board_initializer = range(9)
     for index, value in enumerate(board_str):
@@ -75,15 +97,8 @@ def construct_board(board_str):
     return Board(board_initializer)
 
 
-def results(request):
-    '''
-    Displays the results of a game.
-    '''
-    return HttpResponse('The game is over.')
-
-
 def launch(request):
     '''
-    This view returns the page for launching a game of tic-tac-toe.
+    :returns: response with the page for launching a game of tic-tac-toe.
     '''
     return render(request, 'ttt_app/launch.html')
