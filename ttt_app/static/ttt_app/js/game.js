@@ -93,6 +93,7 @@ function showResult() {
     }
     $("h1").html(heading);
     $("h1").after('<a href="/">Play again</a>');
+    $(".btn").prop("disabled", true);
 }
 
 
