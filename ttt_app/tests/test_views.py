@@ -60,6 +60,25 @@ class PlayFunction(TestCase, Helper):
         response = self.response_to_new_game_post()
         self.assertTemplateUsed(response, self.template)
 
+    ###################################################################
+    # Testing important info is passed to javascript
+    ###################################################################
+
+    def test_PlayerFirstIsPassedToJS(self):
+        response = self.response_to_new_game_post()
+        text = "var playerFirst = true;"
+        self.assertContains(response, text)
+
+    def test_PlayerFirstIsPassedToJS(self):
+        response = self.response_to_new_game_post(player_first=False)
+        text = "var playerFirst = false;"
+        self.assertContains(response, text)
+
+    def test_AdvanceUrlIsPassedToJS(self):
+        response = self.response_to_new_game_post()
+        text = "var advanceURL = \"{}\"".format(reverse("3T:advance_start"))
+        self.assertContains(response, text)
+
 
     ###################################################################
     # Testing the board template

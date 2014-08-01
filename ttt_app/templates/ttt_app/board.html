@@ -47,7 +47,9 @@
 </div>
 
 <script type="text/javascript">
-    var player_first = "{{player_first}}";
+    var playerFirst = {{player_first}};
+    var advanceURL = "{{advance_url}}";
+    console.log(advanceURL);
 </script>
 <script src="{% static 'ttt_app/js/game.js' %}" type="text/javascript"></script>
 {% endblock %}

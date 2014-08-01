@@ -2,15 +2,12 @@ var player = "X";
 var result = "";
 var board_string = "---------";
 
-if (player_first == "false")
+
+if (! playerFirst)
 {
-    player_first = false;
     player = "O"
 }
-else
-{
-    player_first = true;
-}
+
 
 function drawBoard() {
     for(var i in board_string)
@@ -26,9 +23,10 @@ function drawBoard() {
     $(".btn").html(player);
 }
 
+
 function advance() {
     $.ajax({
-                url: 'advance/'+player_first+'/'+board_string,
+                url: advanceURL+ '/' + playerFirst.toString()+'/'+board_string,
                 type: "GET",
                 success: function(json) {
                     board_string = json.board;
@@ -41,6 +39,7 @@ function advance() {
                 }
            });
 }
+
 
 // called when a player clicks a button
 function playerClick() {
@@ -63,12 +62,13 @@ function playerClick() {
     advance();
 }
 
+
 function showResult() {
 
     switch (result)
     {
         case ("x"):
-            if (player_first)
+            if (playerFirst)
             {
                 var heading = "Player (X) Wins!";
             }
@@ -78,7 +78,7 @@ function showResult() {
             }
             break;
         case ("o"):
-            if (player_first)
+            if (playerFirst)
             {
                 var heading = "Perfect (O) Wins!";
             }
@@ -95,10 +95,11 @@ function showResult() {
     $("h1").after('<a href="/">Play again</a>');
 }
 
+
 $(document).ready( function () {
     $(".btn").click(playerClick);
     drawBoard(board_string);
-    if (!player_first)
+    if (! playerFirst)
     {
         advance();
     }
