@@ -13,26 +13,19 @@
 
 
 {% block content %}
+{% load staticfiles %}
+
 <div class="inner cover">
 
-    <form method="post" action="{% url '3T:play' %}"> {% csrf_token %}
-        <input type="hidden" name="player_first" value="{{ player_first }}">
-        <input type="hidden" name="board_str" value="{{ board_str }}">
         <table>
             <tbody>
             <tr>
-                {% for play in board_str %}
-                {% if play == 'x' or play == 'o' %}
-                <td class="xo">{{ play|upper }}</td>
-                {% else %}
-                <td class="button-container">
-                    <input type="submit" class="btn btn-info xobutton" value="{{ next_play }}"
-                           name="choice{{ forloop.counter0 }}"
-                            {% if result %}
-                            disabled
-                            {% endif %}>
+                {% for i in "012345678" %}
+
+                <td class="button-container" id="position{{i}}">
+                    <button type="button" class="btn btn-info xobutton">
+                    </button>
                 </td>
-                {% endif %}
                 {% if forloop.counter0 == 2 or forloop.counter0 == 5 %}
             </tr>
             <tr>
@@ -50,6 +43,12 @@
             </tr>
             </tbody>
         </table>
-    </form>
+
 </div>
+
+<script type="text/javascript">
+    var playerFirst = {{player_first}};
+    var advanceURL = "{{advance_url}}";
+</script>
+<script src="{% static 'ttt_app/js/game.js' %}" type="text/javascript"></script>
 {% endblock %}
